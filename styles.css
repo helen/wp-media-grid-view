@@ -1,0 +1,27 @@
+/* Your fancy styles go here... */
+.media-grid {
+	margin: 30px 0 0 0;
+	list-style: none;
+}
+.media-grid:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+
+.media-item {
+	margin: 0;
+	width: 200px;
+	height: 300px;
+	text-align: center;
+	outline: 1px solid red;
+	float: left;
+	margin: 0 10px 10px 0;
+}
+	.media-item img {
+		max-height: 200px;
+		max-width: 200px;
+	}
