@@ -13,7 +13,6 @@ class WP_Media_Grid {
 
 		add_action( 'load-upload.php',  array( $this, 'media_grid' ) );
 		add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
-
 	}
 
 	/**
@@ -31,7 +30,7 @@ class WP_Media_Grid {
 			'post_type' => 'attachment',
 			'post_mime_type' =>'image',
 			'post_status' => 'inherit',
-			'posts_per_page' => 30,
+			'posts_per_page' => 150,
 		);
 
 		$images = new WP_Query( $args );
@@ -41,12 +40,22 @@ class WP_Media_Grid {
 			<ol class="media-grid">
 			<?php foreach ( $images->posts as $image) : ?>
 				<?php /* <pre><?php var_dump($image); ?></pre> */ ?>
-				<li class="media-item">
-					<?php echo wp_get_attachment_image( $image->ID, 'medium' ); ?>
-					<h3><?php echo $image->post_title; ?></h3>
+				<li class="media-item" id="tn-<?php echo $image->ID; ?>" data-id="<?php echo $image->ID; ?>">
+					<div class="media-thumb">
+						<?php echo wp_get_attachment_image( $image->ID, array(200,200), true, array('class' => 'attachment-image') ); ?>
+					</div>
+					<div class="media-details">
+						<h3><?php echo $image->post_title; ?></h3>
+					</div>
 				</li>
 			<?php endforeach; ?>
 			</ol>
+			<div id="selected-media-details">
+				<h3>Selected Media</h3>
+				<p>Some cool stuff would go here, like the title, description, author, dates, and lots of inputs to edit all the deets.</p>
+				<ol class="selected-media">
+				</ol>
+			</div>
 		</div>
 		<?php
 
