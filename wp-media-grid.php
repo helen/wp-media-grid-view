@@ -40,7 +40,7 @@ class WP_Media_Grid {
 			<ol class="media-grid">
 			<?php foreach ( $images->posts as $image) : ?>
 				<?php /* <pre><?php var_dump($image); ?></pre> */ ?>
-				<li class="media-item" id="tn-<?php echo $image->ID; ?>" data-id="<?php echo $image->ID; ?>">
+				<li class="media-item" id="media-<?php echo $image->ID; ?>" data-id="<?php echo $image->ID; ?>">
 					<div class="media-thumb">
 						<?php echo wp_get_attachment_image( $image->ID, array(200,200) ); ?>
 					</div>

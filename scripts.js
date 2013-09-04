@@ -13,10 +13,17 @@ var wpMediaGrid;
 					selected.find( '#detail-' + id ).remove();
 				} else {
 					$(this).addClass('selected');
-					selected.prepend('<li class="selected-details" id="detail-' + id + '"">' + details + '</li>');
+					selected.prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">' + details + '</li>');
 				}
 
 				wpMediaGrid.selectedCount();
+			});
+
+			$( '#selected-media-details' ).on( 'click', '.selected-details', function() {
+				var id = $(this).data('id'),
+					item = $('#media-' + id);
+				$(this).remove();
+				item.removeClass('selected');
 			});
 		},
 
