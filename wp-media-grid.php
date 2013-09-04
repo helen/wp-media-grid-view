@@ -42,17 +42,26 @@ class WP_Media_Grid {
 				<?php /* <pre><?php var_dump($image); ?></pre> */ ?>
 				<li class="media-item" id="tn-<?php echo $image->ID; ?>" data-id="<?php echo $image->ID; ?>">
 					<div class="media-thumb">
-						<?php echo wp_get_attachment_image( $image->ID, array(200,200), true, array('class' => 'attachment-image') ); ?>
+						<?php echo wp_get_attachment_image( $image->ID, array(200,200) ); ?>
 					</div>
 					<div class="media-details">
+						<?php echo wp_get_attachment_image( $image->ID, array(35,35) ); ?>
 						<h3><?php echo $image->post_title; ?></h3>
+						<ul class="media-options">
+							<li><a href="#">Edit</a></li>
+							<li><a href="#">Delete</a></li>
+						</ul>
 					</div>
 				</li>
 			<?php endforeach; ?>
 			</ol>
 			<div id="selected-media-details">
-				<h3>Selected Media</h3>
-				<p>Some cool stuff would go here, like the title, description, author, dates, and lots of inputs to edit all the deets.</p>
+				<h2>Selected Media</h2>
+				<ul class="selected-media-options">
+					<li class="selected-count"><strong>0</strong> items selected</li>
+					<li><a href="#">Download</a></li>
+					<li><a href="#">Delete</a></li>
+				</ul>
 				<ol class="selected-media">
 				</ol>
 			</div>
