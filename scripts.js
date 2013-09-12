@@ -49,11 +49,17 @@ var timeoutId;
 			});
 			$('.media-item').on('mouseleave', function() {
 				$(this).find('.media-details .media-options').hide();
+				$(this).find('.media-details .media-url-input').hide();
 				if (timeoutId) {
 					window.clearTimeout(timeoutId);
 					timeoutId = null;
 				}
 			});
+
+			// View Item URL, but don't select the item
+			$( '.media-url' ).on( 'click', function(event) {
+				event.stopPropagation();
+			} )
 
 			// Delete Item
 			$( '.media-item' ).on( 'click', '.media-delete', function( event ) {

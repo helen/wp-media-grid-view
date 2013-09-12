@@ -207,19 +207,45 @@
 	.media-options li {
 		float: left;
 		margin: 0;
+		position: relative;
 	}
 	.media-options a {
 		float: left;
-		padding: 8px 10px;
 		text-align: center;
 		color: #fff;
+		padding: 8px 10px;
 		background: rgba(0,0,0,0.8);
+		text-decoration: none;
+		border-right: 1px solid rgba(255,255,255,0.2);
 	}
+		.media-options a span {
+			display: none;
+		}
+	.media-options a:before {
+		display: block;
+		-webkit-font-smoothing: antialiased;
+		font: normal 16px/1 'dashicons';
+	}
+		.media-options a.media-edit:before {
+			content: '\f111';
+		}
+		.media-options a.media-delete:before {
+			content: '\f158';
+		}
+		.media-options a.media-url:before {
+			content: '\f103';
+		}
+
 	.media-options a:hover {
 		background: rgba(0,0,0,0.9);
 	}
+		.media-options a.media-delete:hover {
+			background: red;
+		}
+			.media-options a.media-delete:hover:before {
+				color: #fff;
+			}
 	.media-options li:first-child a {
-		border-right: 1px solid rgba(255,255,255,0.2);
 		-webkit-border-top-left-radius: 2px;
 		-webkit-border-bottom-left-radius: 2px;
 		-moz-border-radius-topleft: 2px;
@@ -228,6 +254,7 @@
 		border-bottom-left-radius: 2px;
 	}
 	.media-options li:last-child a {
+		border: none;
 		-webkit-border-top-right-radius: 2px;
 		-webkit-border-bottom-right-radius: 2px;
 		-moz-border-radius-topright: 2px;

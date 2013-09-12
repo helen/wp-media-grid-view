@@ -41,18 +41,23 @@ class WP_Media_Grid {
 			<h2>Media Library</h2>
 			<ol class="media-grid">
 			<?php foreach ( $images->posts as $image) : ?>
-				<?php /* <pre><?php var_dump($image); ?></pre> */ ?>
+				<?php
+					$img_attr = wp_get_attachment_image_src( $image->ID, array(180,180) );
+					$full_img_attr = wp_get_attachment_image_src( $image->ID, 'full' );
+				?>
 				<li class="media-item" id="media-<?php echo $image->ID; ?>" data-id="<?php echo $image->ID; ?>">
 					<div class="media-thumb">
-						<?php $img_attr = wp_get_attachment_image_src( $image->ID, array(180,180) ); ?>
 						<img class="default" src="<?php echo $img_attr[0]; ?>" width="$img_attr[1]" height="$img_attr[2]" data-width="<?php echo $img_attr[1]; ?>" data-height="<?php echo $img_attr[2]; ?>">
 					</div>
 					<div class="media-details">
 						<?php echo wp_get_attachment_image( $image->ID, array(35,35) ); ?>
 						<h3><?php echo $image->post_title; ?></h3>
 						<ul class="media-options">
-							<li><a class="media-edit" href="#">Edit</a></li>
-							<li><a class="media-delete" href="#">Delete</a></li>
+							<li><a class="media-edit" href="#" title="Edit Details"><span>Edit</span></a></li>
+							<li>
+								<a class="media-url" href="<?php echo $full_img_attr[0]; ?>" target="_new" title="Copy URL"><span>URL</span></a>
+							</li>
+							<li><a class="media-delete" href="#" title="Delete Media"><span>Delete</span></a></li>
 						</ul>
 					</div>
 				</li>
