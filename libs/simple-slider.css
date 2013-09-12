@@ -1,0 +1,45 @@
+.slider {
+  width: 180px;
+}
+
+.slider > .dragger {
+  background: #444;
+
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+
+  border: 1px solid rgba(0,0,0,0.3);
+  width: 16px;
+  height: 16px;
+}
+
+.slider > .dragger:hover {
+  background: #555;
+}
+
+
+.slider > .track, .slider > .highlight-track {
+  background: #ccc;
+
+  -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+
+  border: 1px solid #aaa;
+  height: 4px;
+}
+
+.slider > .highlight-track {
+	background-color: #8DCA09;
+	background: -webkit-linear-gradient(top, #8DCA09, #72A307);
+	background: -moz-linear-gradient(top, #8DCA09, #72A307);
+	background: linear-gradient(top, #8DCA09, #72A307);
+	
+	border-color: #496805;
+}
+
