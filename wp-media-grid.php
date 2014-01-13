@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: wp-media-grid
-Plugin URI:
+Plugin Name: Media Grid
+Plugin URI: http://wordpress.org/plugins/media-grid/
 Description: A grid view for the WordPress Media Library.
-Version: 0.1
-Author: Media Grid Team
+Version: 0.4
+Author: Shaun Andrews
 */
 
 class WP_Media_Grid {
@@ -16,14 +16,21 @@ class WP_Media_Grid {
         //register_taxonomy_for_object_type( 'media_tag', 'attachment' );
 
 		//add_action( 'start_media_lib',  array( $this, 'media_grid' ) );
-		add_action( 'load-upload.php',  array( $this, 'media_grid' ) );
+		
+		if ( isset( $_GET['grid'] ) ) {
+			add_action( 'load-upload.php', array( $this, 'media_grid' ) );
+		} else {
+			add_action( 'admin_init', array( $this, 'add_grid_icon' ) );
+			return;
+		}
 		//add_action( 'admin_print_scripts-upload.php', array( $this, 'enqueue' ) );
 		add_action( 'admin_init', array( $this, 'enqueue' ) );
 
-		add_action( 'init', array( $this, 'custom_taxonomy' ) );
+		/* add_action( 'init', array( $this, 'custom_taxonomy' ) ); */
 	}
 
-	// Register Custom Taxonomy
+
+	/* Expiremental support for tagging media
 	function custom_taxonomy()  {
 
 		$labels = array(
@@ -54,6 +61,17 @@ class WP_Media_Grid {
 		register_taxonomy( 'media_tag', 'attachment', $args );
 
 	}
+	*/
+
+
+	/**
+	 * Adds a button that will switch you to the grid view.
+	 */
+	function add_grid_icon() {
+		wp_enqueue_script( 'wp-media-grid', plugins_url( 'add_icon.js', __FILE__ ), array( 'jquery' ) );
+		wp_enqueue_style( 'wp-media-grid', plugins_url( 'add_icon.css', __FILE__ ) );
+	}
+
 
 	/**
 	 * The main template file for the upload.php screen
@@ -73,39 +91,40 @@ class WP_Media_Grid {
 						'paged' => $next_page,
 					);
 
-					
+					/*
 					if ( !empty( $_GET['filter'] ) && ( $_GET['filter'] !== 'all') ) {
 						$args['post_mime_type'] = $_GET['filter'];
 					}
-
-					if ( !empty( $_GET['tag'] ) ) {
-						$args['media_tag'] = $_GET['tag'];
-					}
+					*/
 
 					$items = new WP_Query( $args );
 					self::renderMediaItems( $items->posts );
 					die();
 					break;
+				/*
 				case 'tag':
 					$tag = $_POST['tag'];
 					$post_id = $_POST['post_id'];
 					wp_set_object_terms( $post_id, $tag, 'media_tag', true );
 					die();
 					break;
+				*/
 				default:
 					break;
 			}
 		}
 
-		$filter = 'all';
+		// $filter = 'all';
 
 		$args = array(
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
 			'posts_per_page' => 25,
 			'paged' => 1,
+			'post_mime_type' => 'image',
 		);
 
+		/*
 		$current_tag = false;
 		if ( isset( $_GET['tag'] ) ) {
 			$current_tag = $_GET['tag'];
@@ -128,6 +147,7 @@ class WP_Media_Grid {
 					break;
 			}
 		}
+		*/
 
 		$items = new WP_Query( $args );
 
@@ -135,107 +155,80 @@ class WP_Media_Grid {
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
 	?>
 		<div id="media-library" class="wrap">
-			<h2>Media Library</h2>
+			<h2>Media Library
+				<?php if ( current_user_can( 'upload_files' ) ) { ?>
+					<a href="media-new.php" class="add-new-h2"><?php echo esc_html_x('Add New', 'file'); ?></a>
+				<?php } ?>
+				<a href="./upload.php" class="add-new-h2" id="media-list-button">Media List</a></h2>
 
 			<ul class="media-nav" data-filter="<?php echo $filter; ?>" data-tag="<?php echo $current_tag; ?>">
-				<li><a href="<?php echo admin_url( 'upload.php' ); ?>"<?php if ( ( $filter == 'all' ) && ( empty( $current_tag ) ) ) echo ' class="current"'; ?>>All Media <span class="count"><?php echo wp_count_posts('attachment')->publish; ?></span></a></li>
-				<!-- <li><a href="#">Media Groups <span class="count">18</span></a></li> -->
-				<li><a href="<?php echo admin_url( 'upload.php?filter=image' ); ?>"<?php if ( $filter == 'image' ) echo ' class="current"'; ?>>Images <span class="count">293</span></a></li>
-				<li><a href="<?php echo admin_url( 'upload.php?filter=video' ); ?>"<?php if ( $filter == 'video' ) echo ' class="current"'; ?>>Video <span class="count">25</span></a></li>
-				<li><a href="<?php echo admin_url( 'upload.php?filter=document' ); ?>"<?php if ( $filter == 'document' ) echo ' class="current"'; ?>>Documents <span class="count">82</span></a></li>
+				<?php /* 
+				<li><a href="<?php echo admin_url( 'upload.php?grid' ); ?>"<?php if ( ( $filter == 'all' ) && ( empty( $current_tag ) ) ) echo ' class="current"'; ?>>All Media <span class="count">523</span></a></li>
+				<li><a href="#">Media Groups <span class="count">18</span></a></li>
+				<li><a href="<?php echo admin_url( 'upload.php?grid&filter=image' ); ?>"<?php if ( $filter == 'image' ) echo ' class="current"'; ?>>Images <span class="count">293</span></a></li>
+				<li><a href="<?php echo admin_url( 'upload.php?grid&filter=video' ); ?>"<?php if ( $filter == 'video' ) echo ' class="current"'; ?>>Video <span class="count">25</span></a></li>
+				<li><a href="<?php echo admin_url( 'upload.php?grid&filter=document' ); ?>"<?php if ( $filter == 'document' ) echo ' class="current"'; ?>>Documents <span class="count">82</span></a></li>
 				<li class="tags">
 					<?php $tags = get_terms( 'media_tag', array( 'hide_empty' => false ) ); ?>
 					<select>
-						<option>Filter by tag&hellip;</option>
+						<?php if( empty($current_tag) ): ?>
+						<option value="none">Filter by tag&hellip;</option>
+						<?php else: ?>
+						<option value="none">Show All</option>
+						<?php endif; ?>
 						<?php foreach( $tags as $tag ): ?>
 						<option<?php if( $current_tag == $tag->name ) echo ' selected="selected"'; ?>><?php echo $tag->name; ?></option>
 						<?php endforeach; ?>
 					</select>
 				</li>
+				*/ ?>
+				<li class="thumbnail-size">
+					<input type="text" data-slider="true" data-slider-step="0.1" data-slider-snap="false" value="1" data-slider-range="0.8,2.2">
+				</li>
+				<li class="live-search">
+					<input type="search" placeholder="Search viewable media&hellip;">
+				</li>
 			</ul>
 
 			<ol class="media-grid">
-				<?php /* Grouped Items. Not even half-baked...
-				<li class="media-group">
-					<ol class="sub-grid grouped">
-						<li class="group-description">
-							<h3>Wireframes</h3>
-							<p>3 items</p>
-						</li>
-						<li class="media-item" id="media-39672" data-id="39672" style="height: 200px; width: 200px;">
-							<div class="media-thumb" style="height: 180px; width: 180px;">
-								<img class="" src="http://wordpress/wp-content/uploads/2013/08/Screen-Shot-2013-08-30-at-2.19.39-PM-231x300.png" width="$img_attr[1]" height="$img_attr[2]" data-width="138" data-height="180" style="height: 180px; width: 138px;">
-							</div>
-							<div class="media-details">
-								<img width="35" height="35" src="http://wordpress/wp-content/uploads/2013/08/Screen-Shot-2013-08-30-at-2.19.39-PM-150x150.png" class="attachment-35x35" alt="Screen Shot 2013-08-30 at 2.19.39 PM">						<h3>Screen Shot 2013-08-30 at 2.19.39 PM</h3>
-								<ul class="media-options" style="display: none;">
-									<li><a class="media-edit" href="#" title="Edit Details"><span>Edit</span></a></li>
-									<li>
-										<a class="media-url" href="http://wordpress/wp-content/uploads/2013/08/Screen-Shot-2013-08-30-at-2.19.39-PM.png" target="_new" title="Open Media in New Window"><span>URL</span></a>
-									</li>
-									<li><a class="media-delete" href="#" title="Delete Media"><span>Delete</span></a></li>
-								</ul>
-							</div>
-						</li>
-						<li class="media-item" id="media-39653" data-id="39653" style="height: 200px; width: 200px;">
-							<div class="media-thumb" style="height: 180px; width: 180px;">
-								<img class="" src="http://wordpress/wp-content/uploads/2013/08/Tabbed-Templates-300x209.png" width="$img_attr[1]" height="$img_attr[2]" data-width="180" data-height="125" style="height: 125px; width: 180px;">
-							</div>
-							<div class="media-details">
-								<img width="35" height="35" src="http://wordpress/wp-content/uploads/2013/08/Tabbed-Templates-150x150.png" class="attachment-35x35" alt="Widget Area Blueprint">						<h3>Widget Area Blueprint</h3>
-								<ul class="media-options" style="display: none;">
-									<li><a class="media-edit" href="#" title="Edit Details"><span>Edit</span></a></li>
-									<li>
-										<a class="media-url" href="http://wordpress/wp-content/uploads/2013/08/Tabbed-Templates.png" target="_new" title="Open Media in New Window"><span>URL</span></a>
-									</li>
-									<li><a class="media-delete" href="#" title="Delete Media"><span>Delete</span></a></li>
-								</ul>
-							</div>
-						</li>
-						<li class="media-item" id="media-39646" data-id="39646" style="height: 200px; width: 200px;">
-							<div class="media-thumb" style="height: 180px; width: 180px;">
-								<img class="" src="http://wordpress/wp-content/uploads/2013/08/test-300x210.png" width="$img_attr[1]" height="$img_attr[2]" data-width="180" data-height="126" style="height: 126px; width: 180px;">
-							</div>
-							<div class="media-details">
-								<img width="35" height="35" src="http://wordpress/wp-content/uploads/2013/08/test-150x150.png" class="attachment-35x35" alt="test">						<h3>test</h3>
-								<ul class="media-options" style="display: none;">
-									<li><a class="media-edit" href="#" title="Edit Details"><span>Edit</span></a></li>
-									<li>
-										<a class="media-url" href="http://wordpress/wp-content/uploads/2013/08/test.png" target="_new" title="Open Media in New Window"><span>URL</span></a>
-									</li>
-									<li><a class="media-delete" href="#" title="Delete Media"><span>Delete</span></a></li>
-								</ul>
-							</div>
-						</li>
-					</ol>
-				</li>
-				*/ ?>
 				<?php self::renderMediaItems( $items->posts ); ?>
 			</ol>
 
+			<div id="add-media">
+				<p>Drop media here to upload, or <button>Browse</button> your computer.</p>				
+			</div>
+
 			<div id="selected-media-details">
-				<fieldset class="thumbnail-size">
-					<input type="text" data-slider="true" data-slider-step="0.1" data-slider-snap="false" value="1" data-slider-range="0.6,3">
-				</fieldset>
-				<fieldset class="live-search">
-					<input type="search" placeholder="Search viewable media&hellip;">
-				</fieldset>
-				<h2 class="selected-count"><strong>0</strong> items selected</h2>
-				<ul class="selected-media-options">
-					<li><a class="selected-compare" href="#">Compare</a></li>
-					<li><a class="selected-tag" href="<?php echo $_SERVER['REQUEST_URI']; ?>">Tag</a></li>
-					<li><a class="selected-download" href="#">Download</a></li>
-					<li><a class="selected-unselect" href="#">Unselect All</a></li>
-					<li><a class="selected-delete" href="#">Delete</a></li>
-				</ul>
+				<div class="selected-meta">
+					<h2 class="selected-count"><strong>0</strong> items selected</h2>
+					<ul class="selected-media-options inactive">
+						<li><a class="selected-compare" href="#">Compare</a></li>
+						<?php /* <li><a class="selected-tag" href="<?php echo $_SERVER['REQUEST_URI']; ?>">Tag</a></li> */ ?>
+						<li><a class="selected-unselect" href="#">Unselect</a></li>
+						<?php /* <li><a class="selected-delete" href="#">Delete</a></li> */ ?>
+					</ul>
+				</div>
 				<ol class="selected-media">
 				</ol>
 			</div>
 
 			<a href="1" class="more-media" data-url="<?php echo $_SERVER['REQUEST_URI']; ?>">Moar!</a>
 
-			<div id="media-compare">
+			<div id="media-modal">
+				<input type="hidden" value="" id="media-id">
 				<ol class="compare-items"></ol>
+				<div class="modal-sidebar">
+					<div class="modal-actions">
+						<span class="close-button"><b>Back to Media</b></span>
+						<a href="#" target="_blank" class="full-size button-secondary">Full Size</a>
+					</div>
+					<div class="modal-details">
+					</div>
+					<ul class="modal-nav">
+						<li class="nav-prev"></li>
+						<li class="nav-next"></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 		<?php
@@ -247,7 +240,6 @@ class WP_Media_Grid {
 
 	public function renderMediaItems( $items ) {
 		foreach ( $items as $item) : ?>
-			<?php /* var_dump( $item ); */ ?>
 			<?php
 				switch ($item->post_mime_type) {
 					case 'image/jpeg':
@@ -263,29 +255,75 @@ class WP_Media_Grid {
 						break;
 				}
 				$item_tags = get_the_terms( $item->ID, 'media_tag' );
+				$item_meta = wp_get_attachment_metadata( $item->ID );
 			?>
-			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>">
+			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-url="<?php echo $item->guid; ?>">
 				<div class="media-thumb">
 					<?php echo $thumb; ?>
 				</div>
-				<ul class="media-options">
-					<li><a class="media-edit" href="#" title="Edit Details"><span>Edit</span></a></li>
-					<li><a class="media-url" href="<?php echo $item->guid; ?>" target="_new" title="Open Media in New Window"><span>View</span></a></li>
-					<?php if ( !empty( $item_tags ) ): ?>
-					<li class="media-tags">
-						<span>Tags</span>
-						<ul>
-						<?php foreach( $item_tags as $tag ): ?>
-							<li><?php echo $tag->name; ?></li>
-						<?php endforeach; ?>
-						</ul>
-					</li>
-					<?php endif; ?>
-					<li><a class="media-delete" href="#" title="Delete Media"><span>Delete</span></a></li>
-				</ul>
 				<div class="media-details">
 					<?php echo $tiny_thumb; ?>
 					<h3><?php echo $item->post_title; ?></h3>
+					<?php if ( !empty( $item_meta ) ): ?>
+					<dl class="media-meta">
+						<?php
+							$media_author = get_userdata( $item->post_author );
+							if ( !empty( $item->post_parent ) )
+								$related_post = get_post( $item->post_parent );
+						?>
+
+						<dt class="photo-rating">Rating</dt>
+						<dd class="photo-rating">
+							<ol class="star-rating">
+								<li class="star"><b>1 star</b></li>
+								<li class="star"><b>2 star</b></li>
+								<li class="star"><b>3 star</b></li>
+								<li class="star"><b>4 star</b></li>
+								<li class="star"><b>5 star</b></li>
+							</ol>
+						</dd>
+
+						<dt class="photo-uploader">Uploaded By</dt>
+						<dd class="photo-uploader">
+							<?php echo get_avatar( $media_author->user_email, 64 ); ?>
+							<?php echo $media_author->user_login; ?>
+						</dd>
+
+						<dt>Uploaded On</dt>
+						<dd><?php echo $item->post_date_gmt; ?></dd>
+
+						<dt>Size</dt>
+						<dd><?php echo $item_meta['height']; ?>px by <?php echo $item_meta['width']; ?>px</dd>
+
+						<dt class="mm-filepath">File Path</dt>
+						<dd class="mm-filepath"><input type="text" value="<?php echo $item->guid; ?>"></dd>
+
+						<?php if ( isset($related_post) ): ?>
+						<dt>Related Post</dt>
+						<dd><a href="<?php echo get_edit_post_link( $related_post->ID ); ?>"><?php echo $related_post->post_title; ?></a></dd>
+						<?php endif; ?>
+
+						<dt>Comments</dt>
+						<dd><?php echo $item->comment_count; ?></dd>
+
+						<?php /* Image EXIF */ ?>
+
+						<?php if ( !empty( $item_meta['image_meta']['camera'] ) ): ?>
+						<dt>Camera</dt>
+						<dd><?php echo $item_meta['image_meta']['camera']; ?></dd>
+						<?php endif; ?>
+
+						<?php if ( !empty( $item_meta['image_meta']['credit'] ) ): ?>
+						<dt>Credit</dt>
+						<dd><?php echo $item_meta['image_meta']['credit']; ?></dd>
+						<?php endif; ?>
+
+						<?php if ( !empty( $item_meta['image_meta']['created_timestamp'] ) ): ?>
+						<dt>Photo Taken On</dt>
+						<dd><?php echo date( 'm/d/Y', $item_meta['image_meta']['created_timestamp'] ); ?></dd>
+						<?php endif; ?>
+					</dl>
+					<?php endif; ?>
 				</div>
 			</li>
 		<?php endforeach;
