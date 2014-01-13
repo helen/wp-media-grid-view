@@ -21,8 +21,6 @@ var timeoutId;
 				tag = $( '.media-nav' ).data( 'tag' );
 				link.addClass( 'loading' ).html( 'Loading more items&hellip;' );
 
-				console.log( filter, tag );
-
 				$.get( url, {
 					media_action: 'more',
 					next_page: next_page,
@@ -41,9 +39,9 @@ var timeoutId;
 				});
 			});
 
-			// Inifite Scroll, and done by a js hack...
+			// Inifite Scroll
 			$(window).scroll(function () {
-				if ($(window).scrollTop() >= $(document).height() - $(window).height() - 600) {
+				if ($(window).scrollTop() >= $(document).height() - $(window).height() - 800) {
 					$( '.more-media' ).trigger( 'click' );
 				}
 			});
@@ -54,140 +52,132 @@ var timeoutId;
 				wpMediaGrid.changeThumbSize( data.value );
 			});
 
+			// Keyboard Nav
+			wpMediaGrid.initKeyboardNav();
+
 			// Live search of viewable items
 			wpMediaGrid.initLiveSearch();
 
-			// Toggle Select Items
-			$( '.media-grid' ).on('click', '.media-item', function() {
-				var id = $(this).data('id'),
-					details = $(this).find( '.media-details' ),
-					selected = $('#selected-media-details .selected-media');
-
-				if ( $(this).hasClass('selected') ) {
-					$(this).removeClass('selected');
-					selected.find( '#detail-' + id ).remove();
-				} else {
-					$(this).addClass('selected');
-					selected.prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">' + details.html() + '</li>');
-					selected.find('#detail-' + id + ' .media-options').hide();
-					selected.find('#detail-' + id + ' h3').hide();
-				}
-
-				wpMediaGrid.selectedCount();
+			// Close modal
+			$( '#media-modal .close-button' ).on( 'click', function() {
+				wpMediaGrid.closeModal();
 			});
 
-			// Open Grouped Items
-			$( '.sub-grid' ).on( 'click', '.group-description', function() {
-				$(this).closest( '.sub-grid' ).toggleClass('expand');
-			});
+			// Highlight Filepath on click
+			$( '.modal-details' ).on( 'click', '.mm-filepath input', function() {
+				$( this ).select();
+			} );
 
-			// Click to unselect from sidebar
-			$( '#selected-media-details' ).on( 'click', '.selected-details', function() {
-				var id = $(this).data('id'),
-					item = $('#media-' + id);
-				$(this).remove();
-				item.removeClass('selected');
-				wpMediaGrid.selectedCount();
-			});
-
-			// Tag selected items
-			$( '.selected-tag' ).on( 'click', function(event) {
-				event.preventDefault();
-				var tag = prompt( 'Enter tag to apply.' ),
-					url = $(this).attr('href'),
-					items = $( '.media-item.selected' );
-
-				items.each( function() {
-					var item_id = $( this ).data('id');
-					$.post( url, {
-						media_action: 'tag',
-						tag: tag,
-						post_id: item_id
-					}, function(data) {
-						console.log( item_id, tag + ' added!', data );
-					});
-				});
-			});
-
-			// View tagged items
-			$( '.tags select' ).on( 'change', function() {
-				var tag = $(this).val();
-				window.location = "/wp-admin/upload.php?tag=" + tag;
-			});
-
-			// Unselect All
-			$( '#selected-media-details' ).on( 'click', '.selected-unselect', function(event) {
-				event.preventDefault();
-				$( '.media-item.selected' ).trigger( 'click' );
-			});
-
-			// Delete Selected
-			$( '#selected-media-details' ).on( 'click', '.selected-delete', function(event) {
-				event.preventDefault();
-				if( confirm( 'This will delete these media items from your library. (Not really, this is just a prototype.)' ) ) {
-					var items = $( '.media-item.selected' );
-					items.each( function() {
-						wpMediaGrid.delete( $(this) );
-					});
-				}
-			});
-
-			// View Selected
-			$( '#selected-media-details' ).on( 'click', '.selected-compare', function(event) {
-				event.preventDefault();
-				var items = $( '.media-item.selected' ),
-					modal = $( '#media-compare' ),
-					compare_items = modal.find( '.compare-items' );
-
-					$.each( items, function( key, value ) {
-						compare_items.append( '<li><img src="' + $( value ).find('.media-url').attr('href') + '"></li>' );
-					});
-
-				modal.fadeIn();
-			});
-
-			// Close compare modal
-			$( '#media-compare' ).on( 'click', function() {
-				$( this ).fadeOut();
-				$( this ).find( '.compare-items' ).empty();
-			});
-
-			// Delayed Actions for Mouseover on Items
-			$('.media-grid').on('mouseover', '.media-item', function() {
-				var item = $(this);
-				if (!timeoutId) {
-					timeoutId = window.setTimeout(function() {
-						item.find('.media-options').fadeIn('fast');
-					}, 750);
-				}
-			});
-			$('.media-grid').on('mouseleave', '.media-item', function() {
-				$(this).find('.media-options').hide();
-				if (timeoutId) {
-					window.clearTimeout(timeoutId);
-					timeoutId = null;
-				}
-			});
-
-			// View Item URL, but don't select the item
-			$( '.media-grid' ).on( 'click', '.media-url', function(event) {
-				event.stopPropagation();
-			} )
+			// View Item
+			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
+				var item = $( this ).closest( '.media-item' );
+				wpMediaGrid.openModal( item );
+			} );
 
 			// Delete Single Item
 			$( '.media-grid' ).on( 'click', '.media-delete', function( event ) {
 				event.preventDefault();
 				event.stopPropagation();
-				if( confirm( 'This will delete this media item from your library. (Not really, this is just a prototype.)' ) ) {
+				if( confirm( 'This will delete this media item from your library.' ) ) {
 					var item = $( this ).closest( '.media-item' );
 					wpMediaGrid.delete( item );
 				}
 			});
+
+			$( '#media-modal' ).on( 'mouseenter mouseleave', '.star', function() {
+				var rating = $(this),
+					prev_stars = rating.prevAll();
+
+				prev_stars.toggleClass( 'hover' );
+			} );
 		},
 
 		initLiveSearch: function() {
 			$( '.media-grid' ).liveFilter('.live-search input', 'li', {
 				filterChildSelector: '.media-details'
+			});
+		},
+
+		openModal: function( item ) {
+			var modal = $( '#media-modal' ),
+				media_compare = modal.find( '.compare-items' ),
+				media_details = modal.find( '.modal-details' ),
+				media_actions = modal.find( '.modal-actions' ),
+				media_view_button = media_actions.find( '.full-size' ),
+				item_id = item.attr( 'id' ),
+				url = item.data( 'url' ),
+				title = item.find( '.media-details h3' ).html(),
+				meta = item.find( '.media-meta' ).clone();
+
+			modal.find( '#media-id' ).val( item_id );
+			media_view_button.attr( 'href', url );
+
+			media_compare.append( '<li><img src="' + url + '"></li>' );
+			media_details.append( '<h3>' + title + '</h3>' );
+			media_details.append( meta );
+
+			var current_item_id = modal.find( '#media-id' ).val(),
+				current_item = $( '#' + current_item_id ),
+				prev_item = current_item.prev( '.media-item' ),
+				next_item = current_item.next( '.media-item' ),
+				prev_item_thumb = prev_item.find( '.media-details .attachment-thumbnail' ).clone(),
+				next_item_thumb = next_item.find( '.media-details .attachment-thumbnail' ).clone();
+
+			modal.find( '.nav-prev' ).append( prev_item_thumb );
+			modal.find( '.nav-next' ).append( next_item_thumb );
+
+			/*
+			modal.find( '.nav-prev' ).on( 'click', function() {
+				wpMediaGrid.clearModal();
+				prev_item.find( '.media-thumb' ).trigger( 'click' );
+			} );
+
+			modal.find( '.nav-next' ).on( 'click', function() {
+				wpMediaGrid.clearModal();
+				next_item.find( '.media-thumb' ).trigger( 'click' );
+			} );
+			*/
+
+			if ( modal.is( ':hidden' ) ) {
+				$( 'body' ).addClass( 'blurred' );
+				modal.fadeIn(200);
+			}
+		},
+
+		closeModal: function() {
+			$( 'body' ).removeClass( 'blurred' );
+			$( '#media-modal' ).fadeOut(200);
+			wpMediaGrid.clearModal();
+		},
+
+		clearModal: function() {
+			var modal = $( '#media-modal' );
+			modal.find( '.compare-items' ).empty();
+			modal.find( '.modal-details' ).empty();
+			modal.find( '.nav-prev' ).empty();
+			modal.find( '.nav-next' ).empty();
+		},
+
+		initKeyboardNav: function() {
+			var modal = $( '#media-modal' );
+
+			$(document).keydown(function(e){
+				if ( modal.is( ':visible' ) ) {
+					var current_item_id = modal.find( '#media-id' ).val(),
+						current_item = $( '#' + current_item_id ),
+						prev_item = current_item.prev( '.media-item' ),
+						next_item = current_item.next( '.media-item' );
+
+					if (e.keyCode == 37) {
+						wpMediaGrid.clearModal();
+						prev_item.find( '.media-thumb' ).trigger( 'click' );
+					} else if (e.keyCode == 39) {
+						wpMediaGrid.clearModal();
+						next_item.find( '.media-thumb' ).trigger( 'click' );
+					} else if (e.keyCode == 27 ) {
+						wpMediaGrid.closeModal();
+					}
+				}
 			});
 		},
 
@@ -216,21 +206,6 @@ var timeoutId;
 			} );
 		},
 
-		selectedCount: function() {
-			var selected = $('#selected-media-details .selected-details')
-				count = $( '#selected-media-details .selected-count strong' );
-
-			// Update the count on the page
-			count.html( selected.length );
-
-			if ( selected.length == 0 ) {
-				$( '.selected-media-options' ).fadeOut();
-			} else {
-				$( '.selected-media-options' ).fadeIn();
-			}
-		},
-
-		// item is a .media-item block
 		delete: function(item) {
 			item.css({
 				'opacity': '0',
