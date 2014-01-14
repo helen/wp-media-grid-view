@@ -150,7 +150,6 @@ class WP_Media_Grid {
 		*/
 
 		$items = new WP_Query( $args );
-
 		// Admin header
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
 	?>
@@ -188,6 +187,13 @@ class WP_Media_Grid {
 				<li class="live-search">
 					<input type="search" placeholder="Search viewable media&hellip;">
 				</li>
+				<li id="total-view-items">
+					<div id="total-items">Found:  <?php 
+						$found = $items->found_posts;
+						echo  '&nbsp;&nbsp;' . $found; if($found<2){?><span>item</span><?php }else{ ?><span>items</span><?php } ?></div>
+					<div id="view-items"></div>
+				</li>
+				<li class="media-select-all"><input type="checkbox" name="media-select-all" value="">Check All</li>
 			</ul>
 
 			<ol class="media-grid">
@@ -261,6 +267,12 @@ class WP_Media_Grid {
 				<div class="media-thumb">
 					<?php echo $thumb; ?>
 				</div>
+				<?php // Reinstating media options popup ?>
+				<ul class="media-options">
+						<li class="media-select"><input type="checkbox" name="media[]" value="<?php echo $item->ID ?>"></li>
+						<li><a class="media-edit" href="<?php echo admin_url( 'post.php?post=' . $item->ID . '&action=edit' ) ?>" title="Edit Details"><span>Edit</span></a></li>
+						<li><a class="submitdelete" href="#">Delete</a></li>
+				</ul>
 				<div class="media-details">
 					<?php echo $tiny_thumb; ?>
 					<h3><?php echo $item->post_title; ?></h3>

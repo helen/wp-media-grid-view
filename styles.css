@@ -28,7 +28,62 @@ body.blurred #media-library .media-grid {
 #media-library .media-grid {
 	transition: opacity 0.2s ease-in-out;
 }
-
+#media-library ul.media-nav li.media-select-all {
+	float: right;
+	margin: 5px 15px 0 5px;
+}
+#total-items {
+	float: left;
+	color: #999;
+}
+#total-items span {
+	font-size: 10px;
+	margin-left: 1px;
+}
+#view-items {
+	float: left;
+	color: #999;
+}
+#view-items span{
+	font-size: 10px;
+	margin-left: 1px;
+}
+#view-items:before {
+	content: "\f139";
+	-webkit-font-smoothing: antialiased;
+	font: normal 16px/1 'dashicons';
+	vertical-align: middle;
+	position: relative;
+		top: -2px;
+}
+#media-library ul.media-nav li.media-select-all {
+	float: right;
+	margin: 5px 15px 0 5px;
+}
+#total-items {
+	float: left;
+	color: #999;
+}
+#total-items span {
+	font-size: 10px;
+	margin-left: 1px;
+}
+#view-items {
+	float: left;
+	color: #999;
+}
+#view-items span{
+	font-size: 10px;
+	margin-left: 1px;
+}
+#view-items:before {
+	content: "\f139";
+	-webkit-font-smoothing: antialiased;
+	font: normal 16px/1 'dashicons';
+	vertical-align: middle;
+	position: relative;
+		top: -2px;
+}
 #media-list-button {
 	font-size: 13px;
 	margin-left: 10px;
@@ -44,10 +99,15 @@ body.blurred #media-library .media-grid {
 		top: -2px;
 }
 
+
+
 ul.media-nav {
+	/*
 	position: absolute;
 		top: 0;
 		right: 0;
+		*/
+	overflow: hidden;
 }
 	ul.media-nav li {
 		display: inline-block;
@@ -300,7 +360,7 @@ ul.media-nav {
 
 
 .media-options {
-	margin: 0;
+	margin: -20px 0 0 0;
 	padding: 3px 8px;
 	opacity: 0;
 	list-style: none;
@@ -352,7 +412,7 @@ ul.media-nav {
 	.media-options a.media-edit {
 		color: #fff;
 		padding: 5px 10px;
-		border-left: 1px dotted rgba(255,255,255,0.3);
+		/*border-left: 1px dotted rgba(255,255,255,0.3);*/
 	}
 	.media-options a.media-edit:before {
 		content: '\f111';
@@ -365,7 +425,22 @@ ul.media-nav {
 			top: -2px;
 		padding: 0 5px 0 0;
 	}
-
+	.media-options a.submitdelete {
+		color: #fff;
+		padding: 3px 3px;
+		border-left: 1px dotted rgba(255,255,255,0.3);
+	}
+	.media-options a.submitdelete:before {
+		content: '\f182';
+		color: #fff;
+		display: inline-block;
+		-webkit-font-smoothing: antialiased;
+		font: normal 16px/1 'dashicons';
+		vertical-align: middle;
+		position: relative;
+			top: -2px;
+		padding: 0 5px 0 0;
+	}
 
 #media-modal {
 	display: none;

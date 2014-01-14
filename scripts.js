@@ -16,7 +16,6 @@ var timeoutId;
 					next_page = parseInt( link.attr('href') ) + 1,
 					filter = '',
 					tag = '';
-
 				filter = $( '.media-nav' ).data( 'filter' );
 				tag = $( '.media-nav' ).data( 'tag' );
 				link.addClass( 'loading' ).html( 'Loading more items&hellip;' );
@@ -36,6 +35,13 @@ var timeoutId;
 						link.remove();
 					}
 					wpMediaGrid.initLiveSearch();
+					wpMediaGrid.totalCount();
+					if(  $('.media-select-all input').is(":checked") ) {
+						if( confirm( 'Select next page worth of items?' ) ) {
+							wpMediaGrid.toggleSelectAll();
+						}
+					}
+					
 				});
 			});
 
@@ -57,7 +63,25 @@ var timeoutId;
 
 			// Live search of viewable items
 			wpMediaGrid.initLiveSearch();
-
+			
+			//Initial Display viewable items count
+			wpMediaGrid.totalCount();
+			
+			//Toggle Select all viewable items
+			$( '.media-select-all input[type=checkbox]' ).on('click', function() {
+				wpMediaGrid.toggleSelectAll();				
+			});
+			//Select single item
+			$('.media-select input[type=checkbox]').on('click', function() {
+				var item = $(this).closest( '.media-item' );
+				console.log('Item is: ' + item);
+				if( $(this).is(":checked") ) {
+					item.addClass('selected');
+				}else {
+					item.removeClass('selected');
+				}
+			});
+			
 			// Close modal
 			$( '#media-modal .close-button' ).on( 'click', function() {
 				wpMediaGrid.closeModal();
@@ -68,12 +92,12 @@ var timeoutId;
 				$( this ).select();
 			} );
 
-			// View Item
+			 //View Item
 			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
 				var item = $( this ).closest( '.media-item' );
 				wpMediaGrid.openModal( item );
 			} );
-
+			
 			// Delete Single Item
 			$( '.media-grid' ).on( 'click', '.media-delete', function( event ) {
 				event.preventDefault();
@@ -167,7 +191,6 @@ var timeoutId;
 						current_item = $( '#' + current_item_id ),
 						prev_item = current_item.prev( '.media-item' ),
 						next_item = current_item.next( '.media-item' );
-
 					if (e.keyCode == 37) {
 						wpMediaGrid.clearModal();
 						prev_item.find( '.media-thumb' ).trigger( 'click' );
@@ -224,7 +247,48 @@ var timeoutId;
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		},
+		
+		// Total number of items on the page
+		totalCount: function() {
+			var onPage = $('.media-grid .media-item:visible'),
+				displayTotalCount = $( '.media-nav #view-items' );
+			if(onPage) {
+				displayTotalCount.html(onPage.length + ' <span>viewable</span>');
+			}
+		},
+		
+		//Select all viewable items on page
+		toggleSelectAll: function() {
+			//Check to see if things are already checked
+			if(  $('.media-select-all input').is(":checked") ) {
+				$( '.media-grid .media-item').each(function() {
+					var id = $(this).data('id'),
+						details = $(this).find( '.media-details' ),
+						selected = $('#selected-media-details .selected-media');
+						
+					if( $(this).hasClass('selected')) {
+						//Do nothing
+					} else {
+						if ( $(this).is(':visible')) {
+							$( this ).addClass('selected');
+							$(this).find( '.media-select input[type=checkbox]' ).attr('checked','checked');
+							selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
+							selected.find('#detail-' + id + ' .media-options').hide();
+							selected.find('#detail-' + id + ' h3').hide();
+							selected.find('#detail-' + id + ' .media-meta').hide();
+						} 
+						//$('.media-select-all').text('Uncheck All');
+					}
+				});
+			} else {
+				$( '.media-grid > .media-item' ).removeClass('selected');
+				$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
+				$( '#selected-media-details .selected-media li' ).remove();
+				$('.media-select-all').html('Check All');
+			} 
 		}
+		
 	}
 
 	$(document).ready(function($){ wpMediaGrid.init(); });
