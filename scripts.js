@@ -35,7 +35,7 @@ var timeoutId;
 						link.remove();
 					}
 					wpMediaGrid.initLiveSearch();
-					wpMediaGrid.totalCount();
+					wpMediaGrid.viewCount();
 					if(  $('.media-select-all input').is(":checked") ) {
 						if( confirm( 'Select next page worth of items?' ) ) {
 							wpMediaGrid.toggleSelectAll();
@@ -65,7 +65,7 @@ var timeoutId;
 			wpMediaGrid.initLiveSearch();
 			
 			//Initial Display viewable items count
-			wpMediaGrid.totalCount();
+			wpMediaGrid.viewCount();
 			
 			//Toggle Select all viewable items
 			$( '.media-select-all input[type=checkbox]' ).on('click', function() {
@@ -74,7 +74,7 @@ var timeoutId;
 			//Select single item
 			$('.media-select input[type=checkbox]').on('click', function() {
 				var item = $(this).closest( '.media-item' );
-				console.log('Item is: ' + item);
+
 				if( $(this).is(":checked") ) {
 					item.addClass('selected');
 				}else {
@@ -103,8 +103,31 @@ var timeoutId;
 				event.preventDefault();
 				event.stopPropagation();
 				if( confirm( 'This will delete this media item from your library.' ) ) {
-					var item = $( this ).closest( '.media-item' );
-					wpMediaGrid.delete( item );
+					//Need the ID just the # please
+					var item = $( this ).closest( '.media-item' ),
+						itemId = item.attr( 'data-id');
+					//Now send it out
+					$.post(
+						pdAjax.ajaxurl,
+						{
+							//wp ajax action
+							action : 'pd_custom_delete',
+							//add parameters
+							itemId : itemId,
+							media_action: 'update',
+							//send nonce along with everything else
+							customDeleteNonce : pdAjax.customDeleteNonce
+						},
+						function( response ) {
+							if(response != 'Fail') {
+								//get the response in readable form
+								var responseID = $.parseJSON(response);
+								wpMediaGrid.gridDelete(responseID);
+							}else {
+								alert('Something went wrong.  Please try again later');
+							}
+						}
+					);
 				}
 			});
 
@@ -229,16 +252,20 @@ var timeoutId;
 			} );
 		},
 
-		delete: function(item) {
-			item.css({
+		gridDelete: function(item) {
+			var itemDel = $('*[data-id="'+item+'');
+			itemDel.css({
 				'opacity': '0',
 				'margin-left': '-200px'
 			});
 			setTimeout( function() {
-				if( item.hasClass( 'selected' ) ) {
-					item.trigger( 'click' );
+				if( itemDel.hasClass( 'selected' ) ) {
+					itemDel.trigger( 'click' );
 				}
-				item.remove();
+				itemDel.remove();
+				wpMediaGrid.initLiveSearch();
+				wpMediaGrid.totalCount();
+				wpMediaGrid.viewCount();
 			}, 300);
 		},
 
@@ -250,12 +277,19 @@ var timeoutId;
 		},
 		
 		// Total number of items on the page
-		totalCount: function() {
+		viewCount: function() {
+
 			var onPage = $('.media-grid .media-item:visible'),
 				displayTotalCount = $( '.media-nav #view-items' );
 			if(onPage) {
 				displayTotalCount.html(onPage.length + ' <span>viewable</span>');
 			}
+		},
+		
+		totalCount: function() {
+			var found = $('#total-items span.found').text(),
+				newfound = parseInt(found) - 1;
+			$('#total-items span.found').text(newfound);
 		},
 		
 		//Select all viewable items on page
@@ -278,14 +312,14 @@ var timeoutId;
 							selected.find('#detail-' + id + ' h3').hide();
 							selected.find('#detail-' + id + ' .media-meta').hide();
 						} 
-						//$('.media-select-all').text('Uncheck All');
+						$('.media-select-all span').text('Uncheck All');
 					}
 				});
 			} else {
 				$( '.media-grid > .media-item' ).removeClass('selected');
 				$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
 				$( '#selected-media-details .selected-media li' ).remove();
-				$('.media-select-all').html('Check All');
+				$('.media-select-all span').text('Check All');
 			} 
 		}
 		

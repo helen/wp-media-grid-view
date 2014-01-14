@@ -40,6 +40,10 @@ body.blurred #media-library .media-grid {
 	font-size: 10px;
 	margin-left: 1px;
 }
+#total-items span.found {
+	font-size: inherit;
+	margin-left: 0;
+}
 #view-items {
 	float: left;
 	color: #999;
@@ -333,7 +337,9 @@ ul.media-nav {
 	.media-item:hover .media-thumb {
 		background: rgba(0,0,0,0.1);
 	}
-
+	.media-item:hover .media-details h3 {
+		opacity: 0.1;
+	}
 .media-item.selected {
 }
 	.media-item.selected .media-thumb {
@@ -425,12 +431,12 @@ ul.media-nav {
 			top: -2px;
 		padding: 0 5px 0 0;
 	}
-	.media-options a.submitdelete {
+	.media-options a.media-delete {
 		color: #fff;
 		padding: 3px 3px;
 		border-left: 1px dotted rgba(255,255,255,0.3);
 	}
-	.media-options a.submitdelete:before {
+	.media-options a.media-delete:before {
 		content: '\f182';
 		color: #fff;
 		display: inline-block;

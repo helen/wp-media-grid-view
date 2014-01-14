@@ -345,7 +345,11 @@ class WP_Media_Grid {
 	 * Enqueue scripts and styles
 	 */
 	public function enqueue() {
-		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery' ) );
+		// redo wp-media-grid enqueueing so we can localize with our variables
+		wp_register_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery' ) );
+		wp_localize_script( 'wp-media-grid', 'pdAjax', array('ajaxurl' => admin_url('admin-ajax.php'), 'customDeleteNonce' => wp_create_nonce('pdajax-custom-delete-nonce'),));
+		// ----------------------------------------------------------------------
+		wp_enqueue_script( 'wp-media-grid');
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
 
 		wp_enqueue_script( 'media-size-slider', plugins_url( 'libs/simple-slider.min.js', __FILE__ ) );
@@ -353,9 +357,55 @@ class WP_Media_Grid {
 
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
 	}
-}
+	
+	
 
+}
+/**
+ *
+ *  Ajax handling
+ *
+ */
+function pd_custom_delete() {
+	$nonce = $_POST['customDeleteNonce'];
+	//Checking nonce
+	if(!wp_verify_nonce($nonce, 'pdajax-custom-delete-nonce')) {
+		die('Not allowed here!');
+	}
+	//Only if user has sufficient permissions
+	if(current_user_can( 'edit_posts' )) {
+		$itemIds = $_POST['itemId'];
+		$update = $_POST['update'];
+		$numID = count($itemIds);
+		if($update) {
+			self::itemsFound($update);
+		}
+		if ($numID == 0){
+			echo 'Did not work';
+		} elseif($numID == 1) {
+			if(false === wp_delete_attachment($itemIds)){
+				echo 'Fail';
+				break;
+			}
+			echo json_encode($itemIds);
+		} else {
+			$responseID = array();
+			foreach($itemIds as $itemId){
+				$responseID[] = $itemId;
+				
+				if(false === wp_delete_attachment($itemId)){
+					echo 'Fail';
+					break;
+				}
+			}
+			echo json_encode($responseID);
+		}
+	}
+	die();
+}
+add_action('wp_ajax_pd_custom_delete', 'pd_custom_delete');
 /**
  * Initialize
  */
 new WP_Media_Grid;
+?>
