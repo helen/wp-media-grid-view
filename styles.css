@@ -28,49 +28,23 @@ body.blurred #media-library .media-grid {
 #media-library .media-grid {
 	transition: opacity 0.2s ease-in-out;
 }
+
 #media-library ul.media-nav li.media-select-all {
 	float: right;
 	margin: 5px 15px 0 5px;
+	width: 7em;
+}
+#total-view-items  {
+	padding: 10px 0 0 0;
 }
 #total-items {
 	float: left;
 	color: #999;
+	font-size: 10px;
 }
 #total-items span {
-	font-size: 10px;
-	margin-left: 1px;
-}
-#total-items span.found {
-	font-size: inherit;
-	margin-left: 0;
-}
-#view-items {
-	float: left;
-	color: #999;
-}
-#view-items span{
-	font-size: 10px;
-	margin-left: 1px;
-}
-#view-items:before {
-	content: "\f139";
-	-webkit-font-smoothing: antialiased;
-	font: normal 16px/1 'dashicons';
-	vertical-align: middle;
-	position: relative;
-		top: -2px;
-}
-#media-library ul.media-nav li.media-select-all {
-	float: right;
-	margin: 5px 15px 0 5px;
-}
-#total-items {
-	float: left;
-	color: #999;
-}
-#total-items span {
-	font-size: 10px;
-	margin-left: 1px;
+	font-size: 13px;
+	margin-right: 2px;
 }
 #view-items {
 	float: left;
@@ -110,15 +84,16 @@ ul.media-nav {
 	position: absolute;
 		top: 0;
 		right: 0;
-		*/
+	*/	
 	overflow: hidden;
+	margin: 0
 }
 	ul.media-nav li {
 		display: inline-block;
 		margin-right: 10px;
 	}
 	ul.media-nav li:last-child {
-		margin: 0;
+		margin: 0 0 0 35px;
 	}
 	ul.media-nav a {}
 	ul.media-nav .count {

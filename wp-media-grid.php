@@ -187,13 +187,13 @@ class WP_Media_Grid {
 				<li class="live-search">
 					<input type="search" placeholder="Search viewable media&hellip;">
 				</li>
+				<li class="media-select-all"><input type="checkbox" name="media-select-all" value=""><span>Check All</span></li>
 				<li id="total-view-items">
-					<div id="total-items">Found:  <?php 
+					<div id="total-items"><?php 
 						$found = $items->found_posts;
-						echo  '&nbsp;&nbsp;' . $found; if($found<2){?><span>item</span><?php }else{ ?><span>items</span><?php } ?></div>
+						echo  '<span class="found">' . $found . '</span>'; if($found==1){?>item<?php }else{ ?>items<?php } ?></div>
 					<div id="view-items"></div>
 				</li>
-				<li class="media-select-all"><input type="checkbox" name="media-select-all" value="">Check All</li>
 			</ul>
 
 			<ol class="media-grid">
