@@ -68,18 +68,43 @@ var timeoutId;
 			wpMediaGrid.viewCount();
 			
 			//Toggle Select all viewable items
+			$( '.media-select-all ' ).poshytip({
+				content: 'All viewable items',
+				hideTimeOut: '5000'
+			});
 			$( '.media-select-all input[type=checkbox]' ).on('click', function() {
 				wpMediaGrid.toggleSelectAll();				
 			});
 			//Select single item
 			$('.media-select input[type=checkbox]').on('click', function() {
 				var item = $(this).closest( '.media-item' );
-
+					id = item.data('id'),
+					details = item.find( '.media-details' ),
+					selected = $('#selected-media-details .selected-media');
+					
 				if( $(this).is(":checked") ) {
 					item.addClass('selected');
+					/* 
+					selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
+					selected.find('#detail-' + id + ' .media-options').hide();
+					selected.find('#detail-' + id + ' h3').hide();
+					selected.find('#detail-' + id + ' .media-meta').hide();
+					*/
 				}else {
 					item.removeClass('selected');
+					//selected.find( '#detail-' + id ).remove();
 				}
+				count = $('.media-grid .selected').length;
+				wpMediaGrid.selectedMediaPopup(count);
+			});
+			
+			// Unselect All
+			$( '#selected-media-details' ).on( 'click', '.selected-unselect', function(event) {
+				event.preventDefault();
+				
+				count = 0;
+				wpMediaGrid.selectedMediaPopup(count);
+				wpMediaGrid.toggleSelectAll();
 			});
 			
 			// Close modal
@@ -105,7 +130,8 @@ var timeoutId;
 				if( confirm( 'This will delete this media item from your library.' ) ) {
 					//Need the ID just the # please
 					var item = $( this ).closest( '.media-item' ),
-						itemId = item.attr( 'data-id');
+						itemId = [item.attr( 'data-id')];
+
 					//Now send it out
 					$.post(
 						pdAjax.ajaxurl,
@@ -128,9 +154,55 @@ var timeoutId;
 							}
 						}
 					);
+					
+					
 				}
 			});
-
+			
+			// Delete All Selected Items
+			$('#selected-media-details').on('click', '.selected-delete',  function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+				if( confirm( 'This will delete selected media items from your library.' ) ) {
+					// Grab all selected id's and place into array 
+					var itemId = [],
+						itemcount = $('.media-grid .selected');
+					$('.media-grid .selected').each(function() {
+						itemId.push($(this).attr('data-id'));
+					});
+					
+					$.post(
+						pdAjax.ajaxurl,
+						{
+							//wp ajax action
+							action : 'pd_custom_delete',
+							
+							//add parameters
+							itemId : itemId,
+					
+							//send nonce along with everything else
+							customDeleteNonce : pdAjax.customDeleteNonce
+							
+						},
+						function( response ) {
+							if(response != 'Fail') {
+								//get the response in readable form
+								var responseID = $.parseJSON(response);
+								//go thru each response and delete dom elements
+								$.each(responseID, function(i, item) {
+									//console.log( 'Each function: ' + item );
+									wpMediaGrid.gridDelete(item);
+								});
+								count = 0;
+								wpMediaGrid.selectedMediaPopup(count);
+							}else {
+								alert('Something went wrong.  Please try again later');
+							}
+						}
+					);
+				}
+			});
+			
 			$( '#media-modal' ).on( 'mouseenter mouseleave', '.star', function() {
 				var rating = $(this),
 					prev_stars = rating.prevAll();
@@ -266,6 +338,7 @@ var timeoutId;
 				wpMediaGrid.initLiveSearch();
 				wpMediaGrid.totalCount();
 				wpMediaGrid.viewCount();
+				
 			}, 300);
 		},
 
@@ -278,7 +351,6 @@ var timeoutId;
 		
 		// Total number of items on the page
 		viewCount: function() {
-
 			var onPage = $('.media-grid .media-item:visible'),
 				displayTotalCount = $( '.media-nav #view-items' );
 			if(onPage) {
@@ -293,9 +365,9 @@ var timeoutId;
 		},
 		
 		//Select all viewable items on page
-		toggleSelectAll: function() {
+		toggleSelectAll: function(n) {
 			//Check to see if things are already checked
-			if(  $('.media-select-all input').is(":checked") ) {
+			if(  $('.media-select-all input').is(":checked") || n ) {
 				$( '.media-grid .media-item').each(function() {
 					var id = $(this).data('id'),
 						details = $(this).find( '.media-details' ),
@@ -307,22 +379,41 @@ var timeoutId;
 						if ( $(this).is(':visible')) {
 							$( this ).addClass('selected');
 							$(this).find( '.media-select input[type=checkbox]' ).attr('checked','checked');
-							selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
-							selected.find('#detail-' + id + ' .media-options').hide();
-							selected.find('#detail-' + id + ' h3').hide();
-							selected.find('#detail-' + id + ' .media-meta').hide();
+							//selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
+							//selected.find('#detail-' + id + ' .media-options').hide();
+							//selected.find('#detail-' + id + ' h3').hide();
+							//selected.find('#detail-' + id + ' .media-meta').hide();
 						} 
 						$('.media-select-all span').text('Uncheck All');
+						count = $('.media-grid .selected').length;
+						wpMediaGrid.selectedMediaPopup(count);
 					}
 				});
 			} else {
 				$( '.media-grid > .media-item' ).removeClass('selected');
 				$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
-				$( '#selected-media-details .selected-media li' ).remove();
+				//$( '#selected-media-details .selected-media li' ).remove();
 				$('.media-select-all span').text('Check All');
+				count = $('.media-grid .selected').length;
+				wpMediaGrid.selectedMediaPopup(count);
 			} 
-		}
+		},
 		
+		//Whole new Selected Media Popup!
+		selectedMediaPopup: function(count) {
+			var media_details = $( '#selected-media-details' );
+			if(count>0){
+				if(media_details.is(':hidden')){
+					media_details.fadeIn(400);
+				}
+				//show count 
+				$('#selected-media-details .selected-count strong' ).html(count);		
+			}else {
+				media_details.fadeOut(400);
+			}
+			
+			
+		}
 	}
 
 	$(document).ready(function($){ wpMediaGrid.init(); });

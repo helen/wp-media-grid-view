@@ -203,19 +203,21 @@ class WP_Media_Grid {
 			<div id="add-media">
 				<p>Drop media here to upload, or <button>Browse</button> your computer.</p>				
 			</div>
-
 			<div id="selected-media-details">
 				<div class="selected-meta">
-					<h2 class="selected-count"><strong>0</strong> items selected</h2>
+					<h2 class="selected-count"><strong>0</strong> items selected / &nbsp;&nbsp;&nbsp;Actions:</h2>
 					<ul class="selected-media-options inactive">
-						<li><a class="selected-compare" href="#">Compare</a></li>
-						<?php /* <li><a class="selected-tag" href="<?php echo $_SERVER['REQUEST_URI']; ?>">Tag</a></li> */ ?>
-						<li><a class="selected-unselect" href="#">Unselect</a></li>
-						<?php /* <li><a class="selected-delete" href="#">Delete</a></li> */ ?>
+						<li><a class="selected-delete" href="#"><div class="dashicons dashicons-trash"></div></a></li>
+						<li><a class="selected-tag" href="#"><div class="dashicons dashicons-tag"></div></a></li>
+						<li><a class="selected-unselect" href="#"><button type="button" title="Clear selection" class="bttn_clear_all">Clear selection</button></a></li>
+
+
 					</ul>
 				</div>
+				<?php /* save for later?
 				<ol class="selected-media">
 				</ol>
+				*/ ?>
 			</div>
 
 			<a href="1" class="more-media" data-url="<?php echo $_SERVER['REQUEST_URI']; ?>">Moar!</a>
@@ -271,7 +273,7 @@ class WP_Media_Grid {
 				<ul class="media-options">
 						<li class="media-select"><input type="checkbox" name="media[]" value="<?php echo $item->ID ?>"></li>
 						<li><a class="media-edit" href="<?php echo admin_url( 'post.php?post=' . $item->ID . '&action=edit' ) ?>" title="Edit Details"><span>Edit</span></a></li>
-						<li><a class="submitdelete" href="#">Delete</a></li>
+						<li><a class="media-delete" href="#">Delete</a></li>
 				</ul>
 				<div class="media-details">
 					<?php echo $tiny_thumb; ?>
@@ -375,19 +377,9 @@ function pd_custom_delete() {
 	//Only if user has sufficient permissions
 	if(current_user_can( 'edit_posts' )) {
 		$itemIds = $_POST['itemId'];
-		$update = $_POST['update'];
 		$numID = count($itemIds);
-		if($update) {
-			self::itemsFound($update);
-		}
 		if ($numID == 0){
 			echo 'Did not work';
-		} elseif($numID == 1) {
-			if(false === wp_delete_attachment($itemIds)){
-				echo 'Fail';
-				break;
-			}
-			echo json_encode($itemIds);
 		} else {
 			$responseID = array();
 			foreach($itemIds as $itemId){
