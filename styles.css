@@ -689,3 +689,6 @@ dd.photo-uploader {
 		.star-rating .star b {
 			display: none;
 		}
+#message {
+	display: none;
+}

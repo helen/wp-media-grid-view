@@ -152,7 +152,14 @@ class WP_Media_Grid {
 		$items = new WP_Query( $args );
 		// Admin header
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
-	?>
+
+		/**
+		 * Ajax Messages 
+		 *    -->uses javascript to load and populate
+		 */
+		?>
+		<div id="message" class="updated"></div>
+		
 		<div id="media-library" class="wrap">
 			<h2>Media Library
 				<?php if ( current_user_can( 'upload_files' ) ) { ?>

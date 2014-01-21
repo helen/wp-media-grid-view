@@ -149,6 +149,8 @@ var timeoutId;
 								//get the response in readable form
 								var responseID = $.parseJSON(response);
 								wpMediaGrid.gridDelete(responseID);
+								wpMediaGrid.showUpdate();
+								wpMediaGrid.initLiveSearch();
 							}else {
 								alert('Something went wrong.  Please try again later');
 							}
@@ -195,6 +197,8 @@ var timeoutId;
 								});
 								count = 0;
 								wpMediaGrid.selectedMediaPopup(count);
+								wpMediaGrid.showUpdate(responseID.length);
+								wpMediaGrid.initLiveSearch();
 							}else {
 								alert('Something went wrong.  Please try again later');
 							}
@@ -335,7 +339,6 @@ var timeoutId;
 					itemDel.trigger( 'click' );
 				}
 				itemDel.remove();
-				wpMediaGrid.initLiveSearch();
 				wpMediaGrid.totalCount();
 				wpMediaGrid.viewCount();
 				
@@ -349,6 +352,18 @@ var timeoutId;
 			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 		},
 		
+		//show update div with positive feedback that item(s) were deleted
+		showUpdate: function(num) {
+			var messageNum = num + '  Media attachments permanently deleted';
+				message = 'Media attachment permanently deleted';
+			
+			if(num) {
+				$('#message').text(messageNum);
+			}else {
+				$('#message').text(message);
+			}
+			$('#message').fadeIn().delay(6000).fadeOut();
+		},
 		// Total number of items on the page
 		viewCount: function() {
 			var onPage = $('.media-grid .media-item:visible'),
