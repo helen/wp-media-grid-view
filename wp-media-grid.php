@@ -403,6 +403,30 @@ function pd_custom_delete() {
 	die();
 }
 add_action('wp_ajax_pd_custom_delete', 'pd_custom_delete');
+function pd_all_items() {
+	$nonce = $_POST['customDeleteNonce'];
+	//Checking nonce
+	if(!wp_verify_nonce($nonce, 'pdajax-custom-delete-nonce')) {
+		die('Not allowed here!');
+	}
+	//Only if user has sufficient permissions
+	if(current_user_can( 'edit_posts' )) {
+		//set the args
+		$args = array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'posts_per_page' => 25,
+			'paged' => 1,
+			'post_mime_type' => 'image'
+			
+		);
+		$items = new WP_Query( $args );
+		WP_Media_Grid::renderMediaItems( $items->posts );
+		//echo $items;
+	}
+	die();
+}
+add_action('wp_ajax_pd_all_items', 'pd_all_items');
 /**
  * Initialize
  */

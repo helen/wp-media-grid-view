@@ -131,32 +131,11 @@ var timeoutId;
 				if( confirm( 'This will delete this media item from your library.' ) ) {
 					//Need the ID just the # please
 					var item = $( this ).closest( '.media-item' ),
-						itemId = [item.attr( 'data-id')];
+						itemId = [item.attr( 'data-id')],
+						which = this.className;
 
 					//Now send it out
-					$.post(
-						pdAjax.ajaxurl,
-						{
-							//wp ajax action
-							action : 'pd_custom_delete',
-							//add parameters
-							itemId : itemId,
-							media_action: 'update',
-							//send nonce along with everything else
-							customDeleteNonce : pdAjax.customDeleteNonce
-						},
-						function( response ) {
-							if(response != 'Fail') {
-								//get the response in readable form
-								var responseID = $.parseJSON(response);
-								wpMediaGrid.gridDelete(responseID);
-								wpMediaGrid.showUpdate();
-								wpMediaGrid.initLiveSearch();
-							}else {
-								alert('Something went wrong.  Please try again later');
-							}
-						}
-					);
+					wpMediaGrid.sendDelete(itemId, which);
 					
 					
 				}
@@ -169,42 +148,15 @@ var timeoutId;
 				if( confirm( 'This will delete selected media items from your library.' ) ) {
 					// Grab all selected id's and place into array 
 					var itemId = [],
-						itemcount = $('.media-grid .selected');
+						itemcount = $('.media-grid .selected'),
+						which = this.className;
 					$('.media-grid .selected').each(function() {
 						itemId.push($(this).attr('data-id'));
 					});
 					
-					$.post(
-						pdAjax.ajaxurl,
-						{
-							//wp ajax action
-							action : 'pd_custom_delete',
-							
-							//add parameters
-							itemId : itemId,
-					
-							//send nonce along with everything else
-							customDeleteNonce : pdAjax.customDeleteNonce
-							
-						},
-						function( response ) {
-							if(response != 'Fail') {
-								//get the response in readable form
-								var responseID = $.parseJSON(response);
-								//go thru each response and delete dom elements
-								$.each(responseID, function(i, item) {
-									//console.log( 'Each function: ' + item );
-									wpMediaGrid.gridDelete(item);
-								});
-								count = 0;
-								wpMediaGrid.selectedMediaPopup(count);
-								wpMediaGrid.showUpdate(responseID.length);
-								wpMediaGrid.initLiveSearch();
-							}else {
-								alert('Something went wrong.  Please try again later');
-							}
-						}
-					);
+					//send it out
+					wpMediaGrid.sendDelete(itemId, which);
+
 				}
 			});
 			
@@ -429,7 +381,74 @@ var timeoutId;
 			}
 			
 			
+		},
+		
+		//Send request to delete media items
+		sendDelete: function(itemId, which) {
+			//Still need to add loading feedback
+			
+			$.post(
+				pdAjax.ajaxurl,
+				{
+					action : 'pd_custom_delete',
+
+					itemId : itemId,
+
+					customDeleteNonce : pdAjax.customDeleteNonce
+				}).done(function(data) {
+					if((which) == 'media-delete') {
+						var responseID = $.parseJSON(data);
+						wpMediaGrid.gridDelete(responseID);
+						wpMediaGrid.showUpdate();
+						wpMediaGrid.initLiveSearch();
+					}else if((which) == 'selected-delete'){
+						console.log('Selected-delete!');
+						var responseID = $.parseJSON(data);
+						//go thru each response and delete dom elements
+						$.each(responseID, function(i, item) {
+							wpMediaGrid.gridDelete(item);
+						});
+						$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
+						count = 0;
+						wpMediaGrid.selectedMediaPopup(count);
+						wpMediaGrid.showUpdate(responseID.length);
+						wpMediaGrid.sendForAll();
+					}
+				}).fail(function(error) {
+					alert('We are sorry. Something went wrong.  Please try again later');
+				});
+			
+		},
+		
+		//Ajax request for all media items
+		sendForAll: function() {
+			var overlay = $('<div id="media-overlay"></div>');
+			overlay.appendTo($('#media-library').attr('display', 'block'));
+			tagSlug = null;
+			$.post( pdAjax.ajaxurl,
+			{
+				action : 'pd_all_items',
+				
+				customDeleteNonce : pdAjax.customDeleteNonce
+			}).done(function(data) {
+				$( '.media-grid li' ).remove();
+				$( '.media-grid' ).append( data );
+				wpMediaGrid.changeThumbSize( $( '.thumbnail-size input' ).val() );
+				wpMediaGrid.totalCount();
+				wpMediaGrid.viewCount();
+				overlay.remove();
+				//revert .more-media link back to href=1
+				$('.more-media').removeClass('loading').attr('href', '1');
+				if(!$('.live-search').hasClass('active')) {
+					wpMediaGrid.initLiveSearch();
+				}
+			}).fail(function() {
+				alert("We're sorry but there seems to be something wrong with the server. Please try again later.");
+				overlay.remove();
+			});
+			
 		}
+		
 	}
 
 	$(document).ready(function($){ wpMediaGrid.init(); });
