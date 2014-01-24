@@ -102,9 +102,10 @@ var timeoutId;
 			$( '#selected-media-details' ).on( 'click', '.selected-unselect', function(event) {
 				event.preventDefault();
 				
+				$('.media-select-all input[type=checkbox]').removeAttr('checked');
+				wpMediaGrid.toggleSelectAll();
 				count = 0;
 				wpMediaGrid.selectedMediaPopup(count);
-				wpMediaGrid.toggleSelectAll();
 			});
 			
 			// Close modal
@@ -424,7 +425,7 @@ var timeoutId;
 				//show count 
 				$('#selected-media-details .selected-count strong' ).html(count);		
 			}else {
-				media_details.fadeOut(400);
+				media_details.fadeOut(100);
 			}
 			
 			
