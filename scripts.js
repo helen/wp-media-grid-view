@@ -68,10 +68,6 @@ var timeoutId;
 			wpMediaGrid.viewCount();
 			
 			//Toggle Select all viewable items
-			$( '.media-select-all ' ).poshytip({
-				content: 'All viewable items',
-				hideTimeOut: '5000'
-			});
 			$( '.media-select-all input[type=checkbox]' ).on('click', function() {
 				wpMediaGrid.toggleSelectAll();				
 			});
