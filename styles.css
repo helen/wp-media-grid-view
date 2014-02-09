@@ -702,6 +702,11 @@ dd.photo-uploader {
     opacity: 0.5;
     z-index: 10000;
 }
-#message {
+body #media-library #message {
 	display: none;
+	margin: 5px 0 30px;
+}
+/*  Trying to override dashicons-trash icon which is broken in latest wordpress update (3.8.1) */
+#media-library .selected-delete .dashicons-trash:before {
+	content: "\f182";
 }
