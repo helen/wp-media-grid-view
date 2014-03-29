@@ -16,7 +16,6 @@ var timeoutId;
 					next_page = parseInt( link.attr('href') ) + 1,
 					filter = '',
 					tag = '';
-
 				filter = $( '.media-nav' ).data( 'filter' );
 				tag = $( '.media-nav' ).data( 'tag' );
 				link.addClass( 'loading' ).html( 'Loading more items&hellip;' );
@@ -36,6 +35,13 @@ var timeoutId;
 						link.remove();
 					}
 					wpMediaGrid.initLiveSearch();
+					wpMediaGrid.viewCount();
+					if(  $('.media-select-all input').is(":checked") ) {
+						if( confirm( 'Select next page worth of items?' ) ) {
+							wpMediaGrid.toggleSelectAll();
+						}
+					}
+					
 				});
 			});
 
@@ -57,7 +63,47 @@ var timeoutId;
 
 			// Live search of viewable items
 			wpMediaGrid.initLiveSearch();
-
+			
+			//Initial Display viewable items count
+			wpMediaGrid.viewCount();
+			
+			//Toggle Select all viewable items
+			$( '.media-select-all input[type=checkbox]' ).on('click', function() {
+				wpMediaGrid.toggleSelectAll();				
+			});
+			//Select single item
+			$('.media-select input[type=checkbox]').on('click', function() {
+				var item = $(this).closest( '.media-item' );
+					id = item.data('id'),
+					details = item.find( '.media-details' ),
+					selected = $('#selected-media-details .selected-media');
+					
+				if( $(this).is(":checked") ) {
+					item.addClass('selected');
+					/* 
+					selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
+					selected.find('#detail-' + id + ' .media-options').hide();
+					selected.find('#detail-' + id + ' h3').hide();
+					selected.find('#detail-' + id + ' .media-meta').hide();
+					*/
+				}else {
+					item.removeClass('selected');
+					//selected.find( '#detail-' + id ).remove();
+				}
+				count = $('.media-grid .selected').length;
+				wpMediaGrid.selectedMediaPopup(count);
+			});
+			
+			// Unselect All
+			$( '#selected-media-details' ).on( 'click', '.selected-unselect', function(event) {
+				event.preventDefault();
+				
+				$('.media-select-all input[type=checkbox]').removeAttr('checked');
+				wpMediaGrid.toggleSelectAll();
+				count = 0;
+				wpMediaGrid.selectedMediaPopup(count);
+			});
+			
 			// Close modal
 			$( '#media-modal .close-button' ).on( 'click', function() {
 				wpMediaGrid.closeModal();
@@ -68,22 +114,48 @@ var timeoutId;
 				$( this ).select();
 			} );
 
-			// View Item
+			 //View Item
 			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
 				var item = $( this ).closest( '.media-item' );
 				wpMediaGrid.openModal( item );
 			} );
-
+			
 			// Delete Single Item
 			$( '.media-grid' ).on( 'click', '.media-delete', function( event ) {
 				event.preventDefault();
 				event.stopPropagation();
 				if( confirm( 'This will delete this media item from your library.' ) ) {
-					var item = $( this ).closest( '.media-item' );
-					wpMediaGrid.delete( item );
+					//Need the ID just the # please
+					var item = $( this ).closest( '.media-item' ),
+						itemId = [item.attr( 'data-id')],
+						which = this.className;
+
+					//Now send it out
+					wpMediaGrid.sendDelete(itemId, which);
+					
+					
 				}
 			});
+			
+			// Delete All Selected Items
+			$('#selected-media-details').on('click', '.selected-delete',  function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+				if( confirm( 'This will delete selected media items from your library.' ) ) {
+					// Grab all selected id's and place into array 
+					var itemId = [],
+						itemcount = $('.media-grid .selected'),
+						which = this.className;
+					$('.media-grid .selected').each(function() {
+						itemId.push($(this).attr('data-id'));
+					});
+					
+					//send it out
+					wpMediaGrid.sendDelete(itemId, which);
 
+				}
+			});
+			
 			$( '#media-modal' ).on( 'mouseenter mouseleave', '.star', function() {
 				var rating = $(this),
 					prev_stars = rating.prevAll();
@@ -167,7 +239,6 @@ var timeoutId;
 						current_item = $( '#' + current_item_id ),
 						prev_item = current_item.prev( '.media-item' ),
 						next_item = current_item.next( '.media-item' );
-
 					if (e.keyCode == 37) {
 						wpMediaGrid.clearModal();
 						prev_item.find( '.media-thumb' ).trigger( 'click' );
@@ -206,16 +277,20 @@ var timeoutId;
 			} );
 		},
 
-		delete: function(item) {
-			item.css({
+		gridDelete: function(item) {
+			var itemDel = $('*[data-id="'+item+'');
+			itemDel.css({
 				'opacity': '0',
 				'margin-left': '-200px'
 			});
 			setTimeout( function() {
-				if( item.hasClass( 'selected' ) ) {
-					item.trigger( 'click' );
+				if( itemDel.hasClass( 'selected' ) ) {
+					itemDel.trigger( 'click' );
 				}
-				item.remove();
+				itemDel.remove();
+				wpMediaGrid.totalCount();
+				wpMediaGrid.viewCount();
+				
 			}, 300);
 		},
 
@@ -224,7 +299,152 @@ var timeoutId;
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		},
+		
+		//show update div with positive feedback that item(s) were deleted
+		showUpdate: function(num) {
+			var messageNum = num + '  Media attachments permanently deleted';
+				message = 'Media attachment permanently deleted';
+			
+			if(num) {
+				$('#message').text(messageNum);
+			}else {
+				$('#message').text(message);
+			}
+			$('#message').fadeIn().delay(6000).fadeOut();
+		},
+		// Total number of items on the page
+		viewCount: function() {
+			var onPage = $('.media-grid .media-item:visible'),
+				displayTotalCount = $( '.media-nav #view-items' );
+			if(onPage) {
+				displayTotalCount.html(onPage.length + ' <span>viewable</span>');
+			}
+		},
+		
+		totalCount: function() {
+			var found = $('#total-items span.found').text(),
+				newfound = parseInt(found) - 1;
+			$('#total-items span.found').text(newfound);
+		},
+		
+		//Select all viewable items on page
+		toggleSelectAll: function(n) {
+			//Check to see if things are already checked
+			if(  $('.media-select-all input').is(":checked") || n ) {
+				$( '.media-grid .media-item').each(function() {
+					var id = $(this).data('id'),
+						details = $(this).find( '.media-details' ),
+						selected = $('#selected-media-details .selected-media');
+						
+					if( $(this).hasClass('selected')) {
+						//Do nothing
+					} else {
+						if ( $(this).is(':visible')) {
+							$( this ).addClass('selected');
+							$(this).find( '.media-select input[type=checkbox]' ).attr('checked','checked');
+							//selected.hide().prepend('<li class="selected-details" id="detail-' + id + '" data-id="' + id + '">'  + details.html() + '</li>').fadeIn(500);
+							//selected.find('#detail-' + id + ' .media-options').hide();
+							//selected.find('#detail-' + id + ' h3').hide();
+							//selected.find('#detail-' + id + ' .media-meta').hide();
+						} 
+						$('.media-select-all span').text('Uncheck All');
+						count = $('.media-grid .selected').length;
+						wpMediaGrid.selectedMediaPopup(count);
+					}
+				});
+			} else {
+				$( '.media-grid > .media-item' ).removeClass('selected');
+				$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
+				//$( '#selected-media-details .selected-media li' ).remove();
+				$('.media-select-all span').text('Check All');
+				count = $('.media-grid .selected').length;
+				wpMediaGrid.selectedMediaPopup(count);
+			} 
+		},
+		
+		//Whole new Selected Media Popup!
+		selectedMediaPopup: function(count) {
+			var media_details = $( '#selected-media-details' );
+			if(count>0){
+				if(media_details.is(':hidden')){
+					media_details.fadeIn(400);
+				}
+				//show count 
+				$('#selected-media-details .selected-count strong' ).html(count);		
+			}else {
+				media_details.fadeOut(100);
+			}
+			
+			
+		},
+		
+		//Send request to delete media items
+		sendDelete: function(itemId, which) {
+			//Still need to add loading feedback
+			
+			$.post(
+				pdAjax.ajaxurl,
+				{
+					action : 'pd_custom_delete',
+
+					itemId : itemId,
+
+					customDeleteNonce : pdAjax.customDeleteNonce
+				}).done(function(data) {
+					if((which) == 'media-delete') {
+						var responseID = $.parseJSON(data);
+						wpMediaGrid.gridDelete(responseID);
+						wpMediaGrid.showUpdate();
+						wpMediaGrid.initLiveSearch();
+					}else if((which) == 'selected-delete'){
+						console.log('Selected-delete!');
+						var responseID = $.parseJSON(data);
+						//go thru each response and delete dom elements
+						$.each(responseID, function(i, item) {
+							wpMediaGrid.gridDelete(item);
+						});
+						$( '.media-grid > .media-item .media-select input[type=checkbox]' ).removeAttr('checked');
+						count = 0;
+						wpMediaGrid.selectedMediaPopup(count);
+						wpMediaGrid.showUpdate(responseID.length);
+						wpMediaGrid.sendForAll();
+					}
+				}).fail(function(error) {
+					alert('We are sorry. Something went wrong.  Please try again later');
+				});
+			
+		},
+		
+		//Ajax request for all media items
+		sendForAll: function() {
+			var overlay = $('<div id="media-overlay"></div>');
+			overlay.appendTo($('#media-library').attr('display', 'block'));
+			tagSlug = null;
+			$.post( pdAjax.ajaxurl,
+			{
+				action : 'pd_all_items',
+				
+				customDeleteNonce : pdAjax.customDeleteNonce
+			}).done(function(data) {
+				$( '.media-grid li' ).remove();
+				$( '.media-grid' ).append( data );
+				wpMediaGrid.changeThumbSize( $( '.thumbnail-size input' ).val() );
+				wpMediaGrid.totalCount();
+				wpMediaGrid.viewCount();
+				overlay.remove();
+				//revert .more-media link back to href=1
+				$('.more-media').removeClass('loading').attr('href', '1');
+				if(!$('.live-search').hasClass('active')) {
+					wpMediaGrid.initLiveSearch();
+				}
+			}).fail(function() {
+				alert("We're sorry but there seems to be something wrong with the server. Please try again later.");
+				overlay.remove();
+			});
+			
 		}
+		
 	}
 
 	$(document).ready(function($){ wpMediaGrid.init(); });

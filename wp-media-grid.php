@@ -150,10 +150,16 @@ class WP_Media_Grid {
 		*/
 
 		$items = new WP_Query( $args );
-
 		// Admin header
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
-	?>
+
+		/**
+		 * Ajax Messages 
+		 *    -->uses javascript to load and populate
+		 */
+		?>
+		<div id="message" class="updated"></div>
+		
 		<div id="media-library" class="wrap">
 			<h2>Media Library
 				<?php if ( current_user_can( 'upload_files' ) ) { ?>
@@ -188,6 +194,13 @@ class WP_Media_Grid {
 				<li class="live-search">
 					<input type="search" placeholder="Search viewable media&hellip;">
 				</li>
+				<li class="media-select-all"><input type="checkbox" name="media-select-all" value=""><span>Check All</span></li>
+				<li id="total-view-items">
+					<div id="total-items"><?php 
+						$found = $items->found_posts;
+						echo  '<span class="found">' . $found . '</span>'; if($found==1){?>item<?php }else{ ?>items<?php } ?></div>
+					<div id="view-items"></div>
+				</li>
 			</ul>
 
 			<ol class="media-grid">
@@ -197,19 +210,21 @@ class WP_Media_Grid {
 			<div id="add-media">
 				<p>Drop media here to upload, or <button>Browse</button> your computer.</p>				
 			</div>
-
 			<div id="selected-media-details">
 				<div class="selected-meta">
-					<h2 class="selected-count"><strong>0</strong> items selected</h2>
+					<h2 class="selected-count"><strong>0</strong> items selected / &nbsp;&nbsp;&nbsp;Actions:</h2>
 					<ul class="selected-media-options inactive">
-						<li><a class="selected-compare" href="#">Compare</a></li>
-						<?php /* <li><a class="selected-tag" href="<?php echo $_SERVER['REQUEST_URI']; ?>">Tag</a></li> */ ?>
-						<li><a class="selected-unselect" href="#">Unselect</a></li>
-						<?php /* <li><a class="selected-delete" href="#">Delete</a></li> */ ?>
+						<li><a class="selected-delete" href="#"><div class="dashicons dashicons-trash"></div></a></li>
+						<li><a class="selected-tag" href="#"><div class="dashicons dashicons-tag"></div></a></li>
+						<li><a class="selected-unselect" href="#"><button type="button" title="Clear selection" class="bttn_clear_all">Clear selection</button></a></li>
+
+
 					</ul>
 				</div>
+				<?php /* save for later?
 				<ol class="selected-media">
 				</ol>
+				*/ ?>
 			</div>
 
 			<a href="1" class="more-media" data-url="<?php echo $_SERVER['REQUEST_URI']; ?>">Moar!</a>
@@ -261,6 +276,12 @@ class WP_Media_Grid {
 				<div class="media-thumb">
 					<?php echo $thumb; ?>
 				</div>
+				<?php // Reinstating media options popup ?>
+				<ul class="media-options">
+						<li class="media-select"><input type="checkbox" name="media[]" value="<?php echo $item->ID ?>"></li>
+						<li><a class="media-edit" href="<?php echo admin_url( 'post.php?post=' . $item->ID . '&action=edit' ) ?>" title="Edit Details"><span>Edit</span></a></li>
+						<li><a class="media-delete" href="#">Delete</a></li>
+				</ul>
 				<div class="media-details">
 					<?php echo $tiny_thumb; ?>
 					<h3><?php echo $item->post_title; ?></h3>
@@ -333,7 +354,11 @@ class WP_Media_Grid {
 	 * Enqueue scripts and styles
 	 */
 	public function enqueue() {
-		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery' ) );
+		// redo wp-media-grid enqueueing so we can localize with our variables
+		wp_register_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery' ) );
+		wp_localize_script( 'wp-media-grid', 'pdAjax', array('ajaxurl' => admin_url('admin-ajax.php'), 'customDeleteNonce' => wp_create_nonce('pdajax-custom-delete-nonce'),));
+		// ----------------------------------------------------------------------
+		wp_enqueue_script( 'wp-media-grid');
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
 
 		wp_enqueue_script( 'media-size-slider', plugins_url( 'libs/simple-slider.min.js', __FILE__ ) );
@@ -341,9 +366,69 @@ class WP_Media_Grid {
 
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
 	}
-}
+	
+	
 
+}
+/**
+ *
+ *  Ajax handling
+ *
+ */
+function pd_custom_delete() {
+	$nonce = $_POST['customDeleteNonce'];
+	//Checking nonce
+	if(!wp_verify_nonce($nonce, 'pdajax-custom-delete-nonce')) {
+		die('Not allowed here!');
+	}
+	//Only if user has sufficient permissions
+	if(current_user_can( 'edit_posts' )) {
+		$itemIds = $_POST['itemId'];
+		$numID = count($itemIds);
+		if ($numID == 0){
+			echo 'Did not work';
+		} else {
+			$responseID = array();
+			foreach($itemIds as $itemId){
+				$responseID[] = $itemId;
+				
+				if(false === wp_delete_attachment($itemId)){
+					echo 'Fail';
+					break;
+				}
+			}
+			echo json_encode($responseID);
+		}
+	}
+	die();
+}
+add_action('wp_ajax_pd_custom_delete', 'pd_custom_delete');
+function pd_all_items() {
+	$nonce = $_POST['customDeleteNonce'];
+	//Checking nonce
+	if(!wp_verify_nonce($nonce, 'pdajax-custom-delete-nonce')) {
+		die('Not allowed here!');
+	}
+	//Only if user has sufficient permissions
+	if(current_user_can( 'edit_posts' )) {
+		//set the args
+		$args = array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'posts_per_page' => 25,
+			'paged' => 1,
+			'post_mime_type' => 'image'
+			
+		);
+		$items = new WP_Query( $args );
+		WP_Media_Grid::renderMediaItems( $items->posts );
+		//echo $items;
+	}
+	die();
+}
+add_action('wp_ajax_pd_all_items', 'pd_all_items');
 /**
  * Initialize
  */
 new WP_Media_Grid;
+?>
