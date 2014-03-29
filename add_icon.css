@@ -1,0 +1,14 @@
+#media-grid-button {
+	font-size: 13px;
+	margin-left: 10px;
+}
+#media-grid-button:before {
+	content: '\f180';
+	display: inline-block;
+	-webkit-font-smoothing: antialiased;
+	font: normal 16px/1 'dashicons';
+	vertical-align: middle;
+	margin-right: 5px;
+	position: relative;
+		top: -2px;
+}
