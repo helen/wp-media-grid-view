@@ -86,40 +86,9 @@ class WP_Media_Grid {
 				<?php self::renderMediaItems( $items->posts ); ?>
 			</ol>
 
-			<div id="add-media">
-				<p>Drop media here to upload, or <button>Browse</button> your computer.</p>				
-			</div>
-
-			<div id="selected-media-details">
-				<div class="selected-meta">
-					<h2 class="selected-count"><strong>0</strong> items selected</h2>
-					<ul class="selected-media-options inactive">
-						<li><a class="selected-compare" href="#">Compare</a></li>
-						<li><a class="selected-unselect" href="#">Unselect</a></li>
-					</ul>
-				</div>
-				<ol class="selected-media">
-				</ol>
-			</div>
+			<div id="media-sidebar"></div>
 
 			<a href="1" class="more-media" data-url="<?php echo $_SERVER['REQUEST_URI']; ?>">Moar!</a>
-
-			<div id="media-modal">
-				<input type="hidden" value="" id="media-id">
-				<ol class="compare-items"></ol>
-				<div class="modal-sidebar">
-					<div class="modal-actions">
-						<span class="close-button"><b>Back to Media</b></span>
-						<a href="#" target="_blank" class="full-size button-secondary">Full Size</a>
-					</div>
-					<div class="modal-details">
-					</div>
-					<ul class="modal-nav">
-						<li class="nav-prev"></li>
-						<li class="nav-next"></li>
-					</ul>
-				</div>
-			</div>
 		</div>
 		<?php
 
@@ -137,7 +106,7 @@ class WP_Media_Grid {
 					case 'image/gif':
 						$img_attr = wp_get_attachment_image_src( $item->ID, array(600,600) );
 						$thumb = '<img class="default" src="' . $img_attr[0] . '" width="' . $img_attr[1] . '" height="' . $img_attr[2] . '" data-width="' . $img_attr[1] . '" data-height="' . $img_attr[2] . '">';
-						$tiny_thumb = wp_get_attachment_image( $item->ID, 'thumbnail' );
+						$tiny_thumb = wp_get_attachment_image( $item->ID, full );
 						break;
 					default:
 						$thumb = '<img src="' . wp_mime_type_icon( $item->ID ) . '">';
@@ -152,26 +121,20 @@ class WP_Media_Grid {
 					<?php echo $thumb; ?>
 				</div>
 				<div class="media-details">
-					<?php echo $tiny_thumb; ?>
-					<h3><?php echo $item->post_title; ?></h3>
+					<div class="media-description">
+						<div>
+							<?php echo $tiny_thumb; ?>
+						</div>
+					</div>
 					<?php if ( !empty( $item_meta ) ): ?>
 					<dl class="media-meta">
+						<h3><?php echo $item->post_title; ?></h3>
+						<p><?php echo $item_meta['height']; ?>px by <?php echo $item_meta['width']; ?>px</p>
 						<?php
 							$media_author = get_userdata( $item->post_author );
 							if ( !empty( $item->post_parent ) )
 								$related_post = get_post( $item->post_parent );
 						?>
-
-						<dt class="photo-rating">Rating</dt>
-						<dd class="photo-rating">
-							<ol class="star-rating">
-								<li class="star"><b>1 star</b></li>
-								<li class="star"><b>2 star</b></li>
-								<li class="star"><b>3 star</b></li>
-								<li class="star"><b>4 star</b></li>
-								<li class="star"><b>5 star</b></li>
-							</ol>
-						</dd>
 
 						<dt class="photo-uploader">Uploaded By</dt>
 						<dd class="photo-uploader">

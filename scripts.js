@@ -46,6 +46,27 @@ var timeoutId;
 				}
 			});
 
+			// Keyboard Nav
+			//wpMediaGrid.initKeyboardNav();
+
+			// Live search of viewable items
+			wpMediaGrid.initLiveSearch();
+
+			// View Item
+			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
+				var item = $( this ).closest( '.media-item' );
+				if ( item.hasClass( 'selected' ) ) {
+					wpMediaGrid.clearSelectedItems();
+				} else {
+					wpMediaGrid.viewItemDetails( item );
+				}
+			} );
+
+			// View Item Full Size
+			$( '#media-sidebar' ).on( 'click', '.media-description', function(event) {
+				$( '#media-sidebar' ).toggleClass( 'view-full-size' );
+			} );
+
 			// Size Chooser
 			$( '.size-options' ).on( 'click', 'li', function(event) {
 				var size_button = $(this),
@@ -58,35 +79,6 @@ var timeoutId;
 				grid.attr( 'class', 'media-grid' );
 				grid.addClass( size_ratio )
 			} );
-
-			// Keyboard Nav
-			wpMediaGrid.initKeyboardNav();
-
-			// Live search of viewable items
-			wpMediaGrid.initLiveSearch();
-
-			// Close modal
-			$( '#media-modal .close-button' ).on( 'click', function() {
-				wpMediaGrid.closeModal();
-			});
-
-			// Highlight Filepath on click
-			$( '.modal-details' ).on( 'click', '.mm-filepath input', function() {
-				$( this ).select();
-			} );
-
-			// View Item
-			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
-				var item = $( this ).closest( '.media-item' );
-				wpMediaGrid.openModal( item );
-			} );
-
-			$( '#media-modal' ).on( 'mouseenter mouseleave', '.star', function() {
-				var rating = $(this),
-					prev_stars = rating.prevAll();
-
-				prev_stars.toggleClass( 'hover' );
-			} );
 		},
 
 		initLiveSearch: function() {
@@ -95,52 +87,34 @@ var timeoutId;
 			});
 		},
 
-		openModal: function( item ) {
-			var modal = $( '#media-modal' ),
-				media_compare = modal.find( '.compare-items' ),
-				media_details = modal.find( '.modal-details' ),
-				media_actions = modal.find( '.modal-actions' ),
-				media_view_button = media_actions.find( '.full-size' ),
+		clearSelectedItems: function() {
+			wpMediaGrid.clearSidebar();
+			$('.media-grid').find( '.selected' ).removeClass( 'selected' );
+		},
+
+		viewItemDetails: function( item ) {
+			var sidebar = $( '#media-sidebar' ),
 				item_id = item.attr( 'id' ),
 				url = item.data( 'url' ),
-				title = item.find( '.media-details h3' ).html(),
-				meta = item.find( '.media-meta' ).clone();
+				thumb_url = item.find( '.media-thumb img' ).attr( 'src' ),
+				sidebar_background = sidebar.find( '.sidebar-background' ),
+				item_details = item.find( '.media-details' ).clone();
 
-			modal.find( '#media-id' ).val( item_id );
-			media_view_button.attr( 'href', url );
+			wpMediaGrid.clearSelectedItems();
 
-			media_compare.append( '<li><img src="' + url + '"></li>' );
-			media_details.append( '<h3>' + title + '</h3>' );
-			media_details.append( meta );
+			item.toggleClass( 'selected' );
 
-			var current_item_id = modal.find( '#media-id' ).val(),
-				current_item = $( '#' + current_item_id ),
-				prev_item = current_item.prev( '.media-item' ),
-				next_item = current_item.next( '.media-item' ),
-				prev_item_thumb = prev_item.find( '.media-details .attachment-thumbnail' ).clone(),
-				next_item_thumb = next_item.find( '.media-details .attachment-thumbnail' ).clone();
+			sidebar.css( 'background-image', 'url(' + thumb_url + ')' );
+			//sidebar_background.attr( 'src', url );
 
-			modal.find( '.nav-prev' ).append( prev_item_thumb );
-			modal.find( '.nav-next' ).append( next_item_thumb );
-
-			if ( modal.is( ':hidden' ) ) {
-				$( 'body' ).addClass( 'blurred' );
-				modal.fadeIn(200);
-			}
+			sidebar.append( item_details );
 		},
 
-		closeModal: function() {
-			$( 'body' ).removeClass( 'blurred' );
-			$( '#media-modal' ).fadeOut(200);
-			wpMediaGrid.clearModal();
-		},
+		clearSidebar: function() {
+			var sidebar = $( '#media-sidebar' );
 
-		clearModal: function() {
-			var modal = $( '#media-modal' );
-			modal.find( '.compare-items' ).empty();
-			modal.find( '.modal-details' ).empty();
-			modal.find( '.nav-prev' ).empty();
-			modal.find( '.nav-next' ).empty();
+			sidebar.find('.media-details').remove();
+			sidebar.css( 'background-image', 'none' );
 		},
 
 		initKeyboardNav: function() {
@@ -164,6 +138,31 @@ var timeoutId;
 					}
 				}
 			});
+		},
+
+		changeThumbSize: function(ratio) {
+			var container_size = 200 * ratio,
+				thumb_size = 180 * ratio,
+				containers = $( '.media-item' ),
+				thumbs = containers.find( '.media-thumb' )
+				images = thumbs.find( 'img' );
+
+			containers.height( container_size );
+			containers.width( container_size );
+
+			$( '.sub-grid' ).height( container_size );
+			$( '.sub-grid' ).width( container_size );
+
+			thumbs.height( thumb_size );
+			thumbs.width( thumb_size );
+
+			images.each( function(index) {
+				$( this ).removeClass('default');
+				og_height = $(this).data('height');
+				og_width = $(this).data('width');
+				$( this ).height( og_height * ratio );
+				$( this ).width( og_width * ratio );
+			} );
 		},
 	}
 
