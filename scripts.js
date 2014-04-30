@@ -126,18 +126,6 @@ var timeoutId;
 			modal.find( '.nav-prev' ).append( prev_item_thumb );
 			modal.find( '.nav-next' ).append( next_item_thumb );
 
-			/*
-			modal.find( '.nav-prev' ).on( 'click', function() {
-				wpMediaGrid.clearModal();
-				prev_item.find( '.media-thumb' ).trigger( 'click' );
-			} );
-
-			modal.find( '.nav-next' ).on( 'click', function() {
-				wpMediaGrid.clearModal();
-				next_item.find( '.media-thumb' ).trigger( 'click' );
-			} );
-			*/
-
 			if ( modal.is( ':hidden' ) ) {
 				$( 'body' ).addClass( 'blurred' );
 				modal.fadeIn(200);

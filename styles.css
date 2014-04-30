@@ -1,4 +1,3 @@
-/* Your fancy styles go here... */
 #media-library {
 	position: relative;
 }
@@ -10,13 +9,6 @@ body.blurred #media-library .media-nav,
 body.blurred #media-library #add-media,
 body.blurred #media-library #selected-media-details,
 body.blurred #media-library .media-grid {
-	/*
-	-webkit-filter: blur(5px);
-	-moz-filter: blur(5px);
-	-o-filter: blur(5px);
-	-ms-filter: blur(5px);
-	filter: blur(5px);
-	*/
 	opacity: 0;
 	pointer-events: none;
 }
