@@ -69,15 +69,20 @@ class WP_Media_Grid {
 			</h2>
 
 			<ul class="media-nav">
-				<li class="thumbnail-size">
-					<input type="text" data-slider="true" data-slider-step="0.1" data-slider-snap="false" value="1" data-slider-range="0.8,2.2">
+				<li class="thumb-size">
+					<h4>Thumbnail Size</h4>
+					<ul class="size-options">
+						<li class="size-small" data-size="small">Small</li>
+						<li class="size-medium current" data-size="medium">Medium</li>
+						<li class="size-large" data-size="large">Large</li>
+					</ul>
 				</li>
 				<li class="live-search">
 					<input type="search" placeholder="Search viewable media&hellip;">
 				</li>
 			</ul>
 
-			<ol class="media-grid">
+			<ol class="media-grid medium">
 				<?php self::renderMediaItems( $items->posts ); ?>
 			</ol>
 
@@ -130,7 +135,7 @@ class WP_Media_Grid {
 					case 'image/jpeg':
 					case 'image/png':
 					case 'image/gif':
-						$img_attr = wp_get_attachment_image_src( $item->ID, array(180,180) );
+						$img_attr = wp_get_attachment_image_src( $item->ID, array(600,600) );
 						$thumb = '<img class="default" src="' . $img_attr[0] . '" width="' . $img_attr[1] . '" height="' . $img_attr[2] . '" data-width="' . $img_attr[1] . '" data-height="' . $img_attr[2] . '">';
 						$tiny_thumb = wp_get_attachment_image( $item->ID, 'thumbnail' );
 						break;
@@ -220,10 +225,6 @@ class WP_Media_Grid {
 	public function enqueue() {
 		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery' ) );
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
-
-		wp_enqueue_script( 'media-size-slider', plugins_url( 'libs/simple-slider.min.js', __FILE__ ) );
-		wp_enqueue_style( 'media-size-slider', plugins_url( 'libs/simple-slider.css', __FILE__ ) );
-
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
 	}
 }

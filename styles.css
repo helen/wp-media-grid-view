@@ -21,32 +21,58 @@ body.blurred #media-library .media-grid {
 	transition: opacity 0.2s ease-in-out;
 }
 
+
+/* Top Navigation Elements */
 ul.media-nav {
 	position: absolute;
 		top: 0;
 		right: 0;
 }
-	ul.media-nav li {
-		display: inline-block;
-		margin-right: 10px;
-	}
-	ul.media-nav li:last-child {
-		margin: 0;
-	}
 
-
-.thumbnail-size {
-	float: right;
-	position: relative;
-	top: 5px;
+ul.media-nav li {
+	display: inline-block;
+	margin-right: 10px;
 }
 
+ul.media-nav li:last-child {
+	margin: 0;
+}
+
+
+/* Thumbnail Size Selector */
+.thumb-size {}
+
+.thumb-size h4 {
+	display: inline-block;
+	font-size: 13px;
+	margin: 0 10px 0 0;
+}
+
+.size-options {
+	display: inline-block;
+}
+
+.size-options li {
+	display: inline-block;
+	padding: 5px;
+	border-radius: 3px;
+}
+
+.size-options li.current {
+	background: rgba(0,0,0,0.6);
+	color: #fff;
+}
+
+
+/* Live Search */
 .live-search {}
 
 .more-media {
 	visibility: hidden;
 }
 
+
+/* The Grid */
 .media-grid {
 	margin: 30px 0 200px 0;
 	list-style: none;
@@ -59,6 +85,32 @@ ul.media-nav {
 	line-height: 0;
 	height: 0;
 }
+
+/* Grid Sizes */
+.media-grid.small .media-item {
+	height: 140px;
+	width: 12.5%;
+}
+.media-grid.small .media-thumb img {
+	max-height: 120px
+}
+
+.media-grid.medium .media-item {
+	height: 200px;
+	width: 25%;
+}
+.media-grid.medium .media-thumb img {
+	max-height: 180px
+}
+
+.media-grid.large .media-item {
+	height: 360px;
+	width: 50%;
+}
+.media-grid.large .media-thumb img {
+	max-height: 340px;
+}
+
 
 #add-media {
 	display: none;
@@ -168,9 +220,6 @@ ul.media-nav {
 			max-width: 100%;
 			box-sizing: border-box;
 			border: 1px solid rgba(255,255,255,0.1);
-			-webkit-transition: all 0.08s linear;
-			-moz-transition: all 0.08s linear;
-			transition: all 0.08s linear;
 		}
 
 .media-thumb:hover img {

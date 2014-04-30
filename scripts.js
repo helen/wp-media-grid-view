@@ -46,11 +46,18 @@ var timeoutId;
 				}
 			});
 
-			// Size Slider
-			wpMediaGrid.changeThumbSize( 1 );
-			$(".thumbnail-size input").bind("slider:changed", function (event, data) {
-				wpMediaGrid.changeThumbSize( data.value );
-			});
+			// Size Chooser
+			$( '.size-options' ).on( 'click', 'li', function(event) {
+				var size_button = $(this),
+					size_ratio = size_button.data( 'size' ),
+					grid = $( '.media-grid' );
+
+				$( '.size-options .current' ).removeClass( 'current' );
+				size_button.addClass( 'current' );
+
+				grid.attr( 'class', 'media-grid' );
+				grid.addClass( size_ratio )
+			} );
 
 			// Keyboard Nav
 			wpMediaGrid.initKeyboardNav();
@@ -158,38 +165,6 @@ var timeoutId;
 				}
 			});
 		},
-
-		changeThumbSize: function(ratio) {
-			var container_size = 200 * ratio,
-				thumb_size = 180 * ratio,
-				containers = $( '.media-item' ),
-				thumbs = containers.find( '.media-thumb' )
-				images = thumbs.find( 'img' );
-
-			containers.height( container_size );
-			containers.width( container_size );
-
-			$( '.sub-grid' ).height( container_size );
-			$( '.sub-grid' ).width( container_size );
-
-			thumbs.height( thumb_size );
-			thumbs.width( thumb_size );
-
-			images.each( function(index) {
-				$( this ).removeClass('default');
-				og_height = $(this).data('height');
-				og_width = $(this).data('width');
-				$( this ).height( og_height * ratio );
-				$( this ).width( og_width * ratio );
-			} );
-		},
-
-		getParam: function(name) {
-			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-				results = regex.exec(location.search);
-			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
 	}
 
 	$(document).ready(function($){ wpMediaGrid.init(); });
