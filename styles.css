@@ -21,21 +21,6 @@ body.blurred #media-library .media-grid {
 	transition: opacity 0.2s ease-in-out;
 }
 
-#media-list-button {
-	font-size: 13px;
-	margin-left: 10px;
-}
-#media-list-button:before {
-	content: '\f163';
-	display: inline-block;
-	-webkit-font-smoothing: antialiased;
-	font: normal 16px/1 'dashicons';
-	vertical-align: middle;
-	margin-right: 5px;
-	position: relative;
-		top: -2px;
-}
-
 ul.media-nav {
 	position: absolute;
 		top: 0;
