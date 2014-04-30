@@ -68,7 +68,7 @@ class WP_Media_Grid {
 				<?php } ?>
 			</h2>
 
-			<ul class="media-nav" data-filter="<?php echo $filter; ?>" data-tag="<?php echo $current_tag; ?>">
+			<ul class="media-nav">
 				<li class="thumbnail-size">
 					<input type="text" data-slider="true" data-slider-step="0.1" data-slider-snap="false" value="1" data-slider-range="0.8,2.2">
 				</li>
