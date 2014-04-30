@@ -145,9 +145,6 @@ class WP_Media_Grid {
 						<dt>Uploaded On</dt>
 						<dd><?php echo $item->post_date_gmt; ?></dd>
 
-						<dt>Size</dt>
-						<dd><?php echo $item_meta['height']; ?>px by <?php echo $item_meta['width']; ?>px</dd>
-
 						<dt class="mm-filepath">File Path</dt>
 						<dd class="mm-filepath"><input type="text" value="<?php echo $item->guid; ?>"></dd>
 

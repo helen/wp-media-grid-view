@@ -29,7 +29,6 @@ var timeoutId;
 				} ).done( function(data) {
 					if ( data ) {
 						$( '.media-grid' ).append( data );
-						wpMediaGrid.changeThumbSize( $( '.thumbnail-size input' ).val() );
 						link.attr( 'href', next_page.toString() );
 						link.removeClass( 'loading' ).html('Get moar!');
 					} else {
@@ -47,7 +46,7 @@ var timeoutId;
 			});
 
 			// Keyboard Nav
-			//wpMediaGrid.initKeyboardNav();
+			wpMediaGrid.initKeyboardNav();
 
 			// Live search of viewable items
 			wpMediaGrid.initLiveSearch();
@@ -63,7 +62,7 @@ var timeoutId;
 			} );
 
 			// View Item Full Size
-			$( '#media-sidebar' ).on( 'click', '.media-description', function(event) {
+			$( '#media-sidebar' ).on( 'click', '.media-description img', function(event) {
 				$( '#media-sidebar' ).toggleClass( 'view-full-size' );
 			} );
 
@@ -118,9 +117,30 @@ var timeoutId;
 		},
 
 		initKeyboardNav: function() {
-			var modal = $( '#media-modal' );
-
 			$(document).keydown(function(e){
+				var grid = $( '.media-grid' ),
+					sidebar = $( '#media-sidebar' ),
+					current_item = grid.find( '.selected' ),
+					current_item_id = current_item.data( 'id' )
+					prev_item = current_item.prev( '.media-item' ),
+					next_item = current_item.next( '.media-item' ),
+					above_item = current_item.prev( '.media-item' ).prev( '.media-item' ).prev( '.media-item' ).prev( '.media-item' ),
+					below_item = current_item.next( '.media-item' ).next( '.media-item' ).next( '.media-item' ).next( '.media-item' );
+
+				if (e.keyCode == 37) { // Left
+					prev_item.find( '.media-thumb' ).trigger( 'click' );
+				} else if (e.keyCode == 39) { // Right
+					next_item.find( '.media-thumb' ).trigger( 'click' );
+				} else if (e.keyCode == 38) { // Up
+					above_item.find( '.media-thumb' ).trigger( 'click' );
+				} else if (e.keyCode == 40) { // Down
+					below_item.find( '.media-thumb' ).trigger( 'click' );
+				} else if (e.keyCode == 27) { // Esc
+					if ( sidebar.hasClass( 'view-full-size' ) ) {
+						sidebar.find( '.media-description img' ).trigger( 'click' );
+					}
+				}
+				/*
 				if ( modal.is( ':visible' ) ) {
 					var current_item_id = modal.find( '#media-id' ).val(),
 						current_item = $( '#' + current_item_id ),
@@ -137,32 +157,8 @@ var timeoutId;
 						wpMediaGrid.closeModal();
 					}
 				}
+				*/
 			});
-		},
-
-		changeThumbSize: function(ratio) {
-			var container_size = 200 * ratio,
-				thumb_size = 180 * ratio,
-				containers = $( '.media-item' ),
-				thumbs = containers.find( '.media-thumb' )
-				images = thumbs.find( 'img' );
-
-			containers.height( container_size );
-			containers.width( container_size );
-
-			$( '.sub-grid' ).height( container_size );
-			$( '.sub-grid' ).width( container_size );
-
-			thumbs.height( thumb_size );
-			thumbs.width( thumb_size );
-
-			images.each( function(index) {
-				$( this ).removeClass('default');
-				og_height = $(this).data('height');
-				og_width = $(this).data('width');
-				$( this ).height( og_height * ratio );
-				$( this ).width( og_width * ratio );
-			} );
 		},
 	}
 
