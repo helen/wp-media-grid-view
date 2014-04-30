@@ -104,7 +104,6 @@ var timeoutId;
 			item.toggleClass( 'selected' );
 
 			sidebar.css( 'background-image', 'url(' + thumb_url + ')' );
-			//sidebar_background.attr( 'src', url );
 
 			sidebar.append( item_details );
 		},
@@ -128,36 +127,26 @@ var timeoutId;
 					below_item = current_item.next( '.media-item' ).next( '.media-item' ).next( '.media-item' ).next( '.media-item' );
 
 				if (e.keyCode == 37) { // Left
+					e.preventDefault();
 					prev_item.find( '.media-thumb' ).trigger( 'click' );
 				} else if (e.keyCode == 39) { // Right
+					e.preventDefault();
 					next_item.find( '.media-thumb' ).trigger( 'click' );
 				} else if (e.keyCode == 38) { // Up
+					e.preventDefault();
 					above_item.find( '.media-thumb' ).trigger( 'click' );
 				} else if (e.keyCode == 40) { // Down
+					e.preventDefault();
 					below_item.find( '.media-thumb' ).trigger( 'click' );
 				} else if (e.keyCode == 27) { // Esc
 					if ( sidebar.hasClass( 'view-full-size' ) ) {
+						e.preventDefault();
 						sidebar.find( '.media-description img' ).trigger( 'click' );
 					}
+				} else if (e.keyCode == 32) { // Spacebar
+					e.preventDefault();
+					sidebar.find( '.media-description img' ).trigger( 'click' );
 				}
-				/*
-				if ( modal.is( ':visible' ) ) {
-					var current_item_id = modal.find( '#media-id' ).val(),
-						current_item = $( '#' + current_item_id ),
-						prev_item = current_item.prev( '.media-item' ),
-						next_item = current_item.next( '.media-item' );
-
-					if (e.keyCode == 37) {
-						wpMediaGrid.clearModal();
-						prev_item.find( '.media-thumb' ).trigger( 'click' );
-					} else if (e.keyCode == 39) {
-						wpMediaGrid.clearModal();
-						next_item.find( '.media-thumb' ).trigger( 'click' );
-					} else if (e.keyCode == 27 ) {
-						wpMediaGrid.closeModal();
-					}
-				}
-				*/
 			});
 		},
 	}

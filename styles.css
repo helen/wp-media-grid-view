@@ -150,15 +150,17 @@ ul.media-nav li:last-child {
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: 100%;
-	-webkit-transition: all 0.3s linear;
-	-moz-transition: all 0.3s linear;
-	transition: all 0.3s linear;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	transition: all 0.1s linear;
 }
 
 	#media-sidebar .sidebar-background {
 		height: 100%;
 		width: auto;
-		transition: all 0.3s ease-in-out;
+		-webkit-transition: all 0.1s ease-in-out;
+		-moz-transition: all 0.1s ease-in-out;
+		transition: all 0.1s ease-in-out;
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -206,9 +208,6 @@ ul.media-nav li:last-child {
 	z-index: 1;
 	color: #fff;
 	display: table;
-	-webkit-transition: all 0.3s linear;
-	-moz-transition: all 0.3s linear;
-	transition: all 0.3s linear;
 }
 	.media-description > div {
 		display: table-cell;
@@ -216,9 +215,6 @@ ul.media-nav li:last-child {
 		text-align: center;
 		height: 200px;
 		width: 100%;
-		-webkit-transition: all 0.3s linear;
-		-moz-transition: all 0.3s linear;
-		transition: all 0.3s linear;
 	}
 	.media-description img {
 		margin: 0 auto;
@@ -230,9 +226,6 @@ ul.media-nav li:last-child {
 		background: rgba(241,241,241,0.8);
 		padding: 1px;
 		box-shadow: 0 0 2px 1px rgba(0,0,0,0.8);
-		-webkit-transition: all 0.3s linear;
-		-moz-transition: all 0.3s linear;
-		transition: all 0.3s linear;
 	}
 
 
@@ -245,9 +238,9 @@ ul.media-nav li:last-child {
 	left: 0;
 	color: #fff;
 	opacity: 1;
-	-webkit-transition: all 0.3s linear;
-	-moz-transition: all 0.3s linear;
-	transition: all 0.3s linear;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	transition: all 0.1s linear;
 }
 	.media-meta h3 {
 		max-width: 100%;
@@ -291,5 +284,5 @@ dd.photo-uploader {
 		height: 90vh;
 	}
 	#media-sidebar.view-full-size .media-meta {
-		opacity: 0;
+		display: none;
 	}
