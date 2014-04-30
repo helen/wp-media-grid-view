@@ -33,20 +33,7 @@ ul.media-nav {
 	ul.media-nav li:last-child {
 		margin: 0;
 	}
-	ul.media-nav a {}
-	ul.media-nav .count {
-		display: none;
-		padding: 2px 8px;
-		border-radius: 20px;
-		background: #aaa;
-		color: #fff;
-		font-size: 12px;
-		margin-left: 5px;
-	}
-	ul.media-nav a.current {
-		color: #222;
-		font-weight: bold;
-	}
+
 
 .thumbnail-size {
 	float: right;
@@ -54,10 +41,7 @@ ul.media-nav {
 	top: 5px;
 }
 
-.live-search {
-	float: right;
-	margin-right: 10px;
-}
+.live-search {}
 
 .more-media {
 	visibility: hidden;
