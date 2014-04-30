@@ -74,16 +74,6 @@ var timeoutId;
 				wpMediaGrid.openModal( item );
 			} );
 
-			// Delete Single Item
-			$( '.media-grid' ).on( 'click', '.media-delete', function( event ) {
-				event.preventDefault();
-				event.stopPropagation();
-				if( confirm( 'This will delete this media item from your library.' ) ) {
-					var item = $( this ).closest( '.media-item' );
-					wpMediaGrid.delete( item );
-				}
-			});
-
 			$( '#media-modal' ).on( 'mouseenter mouseleave', '.star', function() {
 				var rating = $(this),
 					prev_stars = rating.prevAll();
@@ -192,19 +182,6 @@ var timeoutId;
 				$( this ).height( og_height * ratio );
 				$( this ).width( og_width * ratio );
 			} );
-		},
-
-		delete: function(item) {
-			item.css({
-				'opacity': '0',
-				'margin-left': '-200px'
-			});
-			setTimeout( function() {
-				if( item.hasClass( 'selected' ) ) {
-					item.trigger( 'click' );
-				}
-				item.remove();
-			}, 300);
 		},
 
 		getParam: function(name) {
