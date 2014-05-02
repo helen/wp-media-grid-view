@@ -2047,7 +2047,7 @@
 				modal: false,
 				selection: [],
 				library:   {},
-				multiple:  false,
+				multiple:  true,
 				state:    'library'
 			} );
 			/**
@@ -2093,7 +2093,9 @@
 					multiple:  options.multiple,
 					title:     options.title,
 					priority:  20
-				})
+				}),
+
+				new media.controller.EditImage( { model: options.editImage } )
 			]);
 		},
 
