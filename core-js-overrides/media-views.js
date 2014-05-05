@@ -2104,6 +2104,7 @@
 			this.on( 'router:render:browse', this.browseRouter, this );
 			this.on( 'content:create:browse', this.browseContent, this );
 			this.on( 'content:render:upload', this.uploadContent, this );
+			this.on( 'content:render:edit-image', this.editImageContent, this );
 		},
 
 		// Routers
@@ -2148,6 +2149,17 @@
 
 				AttachmentView: state.get('AttachmentView')
 			});
+		},
+
+		editImageContent: function() {
+			var image = this.state().get('image'),
+				view = new media.view.EditImage( { model: image, controller: this } ).render();
+
+			this.content.set( view );
+
+			// after creating the wrapper view, load the actual editor via an ajax call
+			view.loadEditor();
+
 		},
 
 		/**
