@@ -1,7 +1,18 @@
 #media-library .media-frame {
 	position: fixed;
-	top: 28px;
+	top: 32px;
 	left: 160px;
 	right: 0;
-	bottom: 0;
+	bottom: 40px;
+}
+
+.folded #media-library .media-frame {
+	left: 36px;
+}
+
+@media screen and (max-width: 782px) {
+	.auto-fold #media-library .media-frame {
+		left: 0px;
+		bottom: 0px;
+	}
 }
