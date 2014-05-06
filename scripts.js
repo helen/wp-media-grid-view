@@ -1,5 +1,4 @@
 var wpMediaGrid;
-var timeoutId;
 
 (function($) {
 	wpMediaGrid = {
@@ -62,8 +61,8 @@ var timeoutId;
 			} );
 
 			// View Item Full Size
-			$( '#media-sidebar' ).on( 'click', '.media-description img', function(event) {
-				$( '#media-sidebar' ).toggleClass( 'view-full-size' );
+			$( '#media-sidebar' ).on( 'click', '.selected-thumb', function(event) {
+				wpMediaGrid.viewFullItem();
 			} );
 
 			// Size Chooser
@@ -94,24 +93,53 @@ var timeoutId;
 		viewItemDetails: function( item ) {
 			var sidebar = $( '#media-sidebar' ),
 				item_id = item.attr( 'id' ),
-				url = item.data( 'url' ),
-				thumb_url = item.find( '.media-thumb img' ).attr( 'src' ),
+				full_url = item.data( 'url' ),
+				thumb = item.find( '.media-thumb' ).clone(),
+				thumb_url = thumb.find( 'img' ).attr( 'src' ),
 				sidebar_background = sidebar.find( '.sidebar-background' ),
 				item_details = item.find( '.media-details' ).clone();
 
+			thumb.removeClass( 'media-thumb' ).addClass( 'selected-thumb' );
+			item_details.removeClass( 'media-details' ).addClass( 'selected-details' );
+
 			wpMediaGrid.clearSelectedItems();
-
 			item.toggleClass( 'selected' );
-
 			sidebar.css( 'background-image', 'url(' + thumb_url + ')' );
+			sidebar.append( thumb, item_details );
+		},
 
-			sidebar.append( item_details );
+		viewFullItem: function() {
+			var sidebar = $( '#media-sidebar' ),
+				thumb = sidebar.find( '.selected-thumb img' ),
+				selected_item = $( '.media-grid .selected' ),
+				selected_full_url = selected_item.data( 'url' );
+
+			sidebar.toggleClass( 'view-full-size' );
+			thumb.attr( 'src', selected_full_url );
+
+			/*
+			if ( sidebar.hasClass( 'view-full-size' ) ) {
+				thumb.attr( 'height', '' );
+				thumb.attr( 'width', '' );
+				sidebar.removeClass( 'view-full-size' );
+				thumb.attr( 'src', thumb.data( 'thumb' ) );
+			} else {
+				var full_height = selected_item.data( 'height' ),
+					full_width = selected_item.data( 'width' );
+
+				sidebar.addClass( 'view-full-size' );
+				thumb.attr( 'height', full_height );
+				thumb.attr( 'width', full_width );
+				thumb.data( 'thumb', thumb.attr( 'src' ) );
+				thumb.attr( 'src', selected_full_url );
+			}
+			*/
 		},
 
 		clearSidebar: function() {
 			var sidebar = $( '#media-sidebar' );
 
-			sidebar.find('.media-details').remove();
+			sidebar.empty();
 			sidebar.css( 'background-image', 'none' );
 		},
 
@@ -145,7 +173,7 @@ var timeoutId;
 					}
 				} else if (e.keyCode == 32) { // Spacebar
 					e.preventDefault();
-					sidebar.find( '.media-description img' ).trigger( 'click' );
+					wpMediaGrid.viewFullItem();
 				}
 			});
 		},

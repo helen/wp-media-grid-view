@@ -53,7 +53,7 @@ class WP_Media_Grid {
 			'post_status' => 'inherit',
 			'posts_per_page' => 25,
 			'paged' => 1,
-			'post_mime_type' => 'image',
+			//'post_mime_type' => 'image',
 		);
 
 		$items = new WP_Query( $args );
@@ -104,28 +104,24 @@ class WP_Media_Grid {
 					case 'image/jpeg':
 					case 'image/png':
 					case 'image/gif':
-						$img_attr = wp_get_attachment_image_src( $item->ID, array(600,600) );
-						$thumb = '<img class="default" src="' . $img_attr[0] . '" width="' . $img_attr[1] . '" height="' . $img_attr[2] . '" data-width="' . $img_attr[1] . '" data-height="' . $img_attr[2] . '">';
-						$tiny_thumb = wp_get_attachment_image( $item->ID, full );
+						$img_attr = wp_get_attachment_image_src( $item->ID, array(300,300) );
+						//$thumb = '<img class="default" src="' . $img_attr[0] . '" width="' . $img_attr[1] . '" height="' . $img_attr[2] . '" data-width="' . $img_attr[1] . '" data-height="' . $img_attr[2] . '">';
+						$thumb = '<img src="' . $img_attr[0] . '">';
+						$full_size = wp_get_attachment_image_src( $item->ID, 'full' );
 						break;
 					default:
 						$thumb = '<img src="' . wp_mime_type_icon( $item->ID ) . '">';
-						$tiny_thumb = '<img src="' . wp_mime_type_icon( $item->ID ) . '">';
+						$full_size = '<img src="' . wp_mime_type_icon( $item->ID ) . '">';
 						break;
 				}
 				$item_tags = get_the_terms( $item->ID, 'media_tag' );
 				$item_meta = wp_get_attachment_metadata( $item->ID );
 			?>
-			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-url="<?php echo $item->guid; ?>">
+			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-url="<?php echo $full_size[0]; ?>" data-height="<?php echo $full_size[2]; ?>" data-width="<?php echo $full_size[1]; ?>">
 				<div class="media-thumb">
-					<?php echo $thumb; ?>
+					<span><?php echo $thumb; ?></span>
 				</div>
 				<div class="media-details">
-					<div class="media-description">
-						<div>
-							<?php echo $tiny_thumb; ?>
-						</div>
-					</div>
 					<?php if ( !empty( $item_meta ) ): ?>
 					<dl class="media-meta">
 						<h3><?php echo $item->post_title; ?></h3>
