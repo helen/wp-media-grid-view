@@ -2055,6 +2055,8 @@
 			 */
 			media.view.MediaFrame.prototype.initialize.apply( this, arguments );
 
+			// Since we're not using the default modal built into
+			// a media frame, append our $element to the supplied container.
 			this.$el.appendTo( this.options.container );
 
 			this.createSelection();
@@ -5050,13 +5052,20 @@
 
 			this.initSortable();
 
+			// When a user setting changes, rerender the css in case the
+			// number of attachments per row has changed.
+			this.controller.on( 'change:userSetting', this.css, this );
+
 			_.bindAll( this, 'css' );
+
 			this.model.on( 'change:edge change:gutter', this.css, this );
 			this._resizeCss = _.debounce( _.bind( this.css, this ), this.refreshSensitivity );
 			if ( this.options.resize ) {
 				$(window).on( 'resize.attachments', this._resizeCss );
 			}
-			this.css();
+
+			// Defer CSS until the elements are visible on the page.
+			_.defer( _.bind( this.css, this ) );
 		},
 
 		dispose: function() {
@@ -5082,19 +5091,16 @@
 			}) );
 		},
 		/**
+		 * The width of an attachment.
+		 *
 		 * @returns {Number}
 		 */
 		edge: function() {
 			var edge = this.model.get('edge'),
 				gutter, width, columns;
-
-			if ( ! this.$el.is(':visible') ) {
-				return edge;
-			}
-
 			gutter  = this.model.get('gutter') * 2;
 			width   = this.$el.width() - gutter;
-			columns = Math.ceil( width / ( edge + gutter ) );
+			columns = getUserSetting( 'attachmentBrowserColumns' ) || 2;
 			edge = Math.floor( ( width - ( columns * gutter ) ) / columns );
 			return edge;
 		},
@@ -5282,6 +5288,61 @@
 			}
 		}
 	});
+
+	/**
+	 * wp.media.view.AttachmentSizer
+	 *
+	 * Options for changing the size of attachments.
+	 *
+	 * @constructor
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 */
+	media.view.AttachmentSizer = media.View.extend({
+		tagName: 'ul',
+		className: 'size-options',
+
+		events: {
+			'click li': 'set'
+		},
+
+		initialize: function() {
+			this.sizes = {
+				small: {
+					text: 'Small',
+					columns: 6
+				},
+				medium: {
+					text: 'Medium',
+					columns: 4
+				},
+				large: {
+					text: 'Large',
+					columns: 2
+				}
+			};
+
+			var current = getUserSetting( 'attachmentBrowserColumns' ) || 2;
+			this.$el.html( _.chain( this.sizes ).map( function( size, id ) {
+				return $('<li></li>').html( size.text ).attr( 'data-number-of-columns', size.columns ).toggleClass( 'current', current == size.columns );
+			}, this ).value() );
+		},
+
+		/**
+		 * Event handler for clicking a size.
+		 */
+		set: function( event ) {
+			var columns = $( event.target ).data('number-of-columns');
+
+			this.$( 'li' ).removeClass( 'current' );
+			this.$( 'li[data-number-of-columns="' + columns + '"]' ).addClass( 'current' );
+			setUserSetting( 'attachmentBrowserColumns', columns );
+			this.controller.trigger( 'change:userSetting' );
+		}
+
+	});
+
 
 	/**
 	 * wp.media.view.AttachmentFilters
@@ -5509,6 +5570,12 @@
 			this.toolbar.set( 'spinner', new media.view.Spinner({
 				priority: -70
 			}) );
+
+			this.toolbar.set( 'attachmentSizer', new media.view.AttachmentSizer({
+				controller: this.controller,
+				model:      this.collection.props, // not sure this is necessary.
+				priority:   -60
+			}).render() );
 
 			if ( this.options.search ) {
 				this.toolbar.set( 'search', new media.view.Search({

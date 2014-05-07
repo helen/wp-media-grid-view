@@ -16,3 +16,29 @@
 		bottom: 0px;
 	}
 }
+
+/* Thumbnail Size Selector */
+.size-options {
+	display: inline-block;
+}
+
+.size-options li {
+	background: rgba(242, 242, 242, 0.8);
+	border-radius: 3px;
+	border: 1px solid rgba(242, 242, 242, 1);
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 5px;
+	padding: 5px;
+}
+
+.size-options li:hover {
+	background: rgba(0,0,0,0.1);
+}
+
+.size-options .current,
+.size-options .current:hover {
+	background: rgba(0,0,0,0.6);
+	color: #fff;
+	cursor: default;
+}
