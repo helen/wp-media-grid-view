@@ -50,6 +50,50 @@ var wpMediaGrid;
 			// Live search of viewable items
 			wpMediaGrid.initLiveSearch();
 
+			// Enable Picker Mode
+			$( '.toggle-picker-mode' ).on( 'click', function(event) {
+				$( 'body' ).toggleClass( 'picker-mode' );
+				wpMediaGrid.clearSelectedItems();
+			} );
+
+			// Pick Item
+			$( '.media-grid' ).on( 'click', '.item-pick', function(event) {
+				event.stopPropagation();
+				var checkbox = $( this ),
+					media_item = checkbox.closest( '.media-item' ),
+					item_id = media_item.data( 'id' ),
+					picked_sidebar = $( '#media-picked' ),
+					picked_list = picked_sidebar.find( '.picked-list' ),
+					picked_count = picked_sidebar.find( '.picked-count' );
+
+				// Check if the item is already picked
+				if ( media_item.hasClass( 'picked' ) ) {
+					media_item.removeClass( 'picked' );
+					picked_list.find( '#picked-' + item_id ).remove();
+				} else {
+					var square_url = media_item.data( 'square' ),
+						square_img = $( '<img>' ),
+						picked_list_item = $( '<li></li>' );
+
+					picked_list_item.attr( 'id', 'picked-' + item_id );
+
+					// Highlight the item in the grid
+					media_item.addClass( 'picked' );
+
+					// Create the thumbnail image
+					square_img.attr( 'src', square_url );
+
+					// Add the thumbnail to the list item
+					picked_list_item.append( square_img );
+
+					// Drop it all into the sidebar list
+					picked_list.append( picked_list_item );
+				}
+
+				// Updated the counter
+				picked_count.html( picked_list.find('li').size() );
+			} );
+
 			// View Item
 			$( '.media-grid' ).on( 'click', '.media-thumb', function(event) {
 				var item = $( this ).closest( '.media-item' );
@@ -139,7 +183,8 @@ var wpMediaGrid;
 		clearSidebar: function() {
 			var sidebar = $( '#media-sidebar' );
 
-			sidebar.empty();
+			sidebar.find( '.selected-thumb' ).remove();
+			sidebar.find( '.selected-details' ).remove();
 			sidebar.css( 'background-image', 'none' );
 		},
 

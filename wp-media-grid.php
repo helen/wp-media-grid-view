@@ -69,6 +69,9 @@ class WP_Media_Grid {
 			</h2>
 
 			<ul class="media-nav">
+				<li class="bulk-edit">
+					<span class="toggle-picker-mode button button-secondary">Bulk Edit</span>
+				</li>
 				<li class="thumb-size">
 					<h4>Thumbnail Size</h4>
 					<ul class="size-options">
@@ -86,7 +89,18 @@ class WP_Media_Grid {
 				<?php self::renderMediaItems( $items->posts ); ?>
 			</ol>
 
-			<div id="media-sidebar"></div>
+			<div id="media-sidebar">
+				<div id="media-picked">
+					<h3><span class="picked-count">0</span> items selected</h3>
+					<ul class="picked-list">
+					</ul>
+					<ul class="picked-actions">
+						<li>Create a Post with Selected</li>
+						<li>Move Selected to Collection</li>
+						<li>Delete Selected</li>
+					</ul>
+				</div>
+			</div>
 
 			<a href="1" class="more-media" data-url="<?php echo $_SERVER['REQUEST_URI']; ?>">Moar!</a>
 		</div>
@@ -108,6 +122,7 @@ class WP_Media_Grid {
 						//$thumb = '<img class="default" src="' . $img_attr[0] . '" width="' . $img_attr[1] . '" height="' . $img_attr[2] . '" data-width="' . $img_attr[1] . '" data-height="' . $img_attr[2] . '">';
 						$thumb = '<img src="' . $img_attr[0] . '">';
 						$full_size = wp_get_attachment_image_src( $item->ID, 'full' );
+						$square = wp_get_attachment_image_src( $item->ID, 'thumbnail' );
 						break;
 					default:
 						$thumb = '<img src="' . wp_mime_type_icon( $item->ID ) . '">';
@@ -117,9 +132,10 @@ class WP_Media_Grid {
 				$item_tags = get_the_terms( $item->ID, 'media_tag' );
 				$item_meta = wp_get_attachment_metadata( $item->ID );
 			?>
-			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-url="<?php echo $full_size[0]; ?>" data-height="<?php echo $full_size[2]; ?>" data-width="<?php echo $full_size[1]; ?>">
+			<li class="media-item" id="media-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-url="<?php echo $full_size[0]; ?>" data-square="<?php echo $square[0]; ?>" data-height="<?php echo $full_size[2]; ?>" data-width="<?php echo $full_size[1]; ?>">
 				<div class="media-thumb">
 					<span><?php echo $thumb; ?></span>
+					<span class="item-pick"></span>
 				</div>
 				<div class="media-details">
 					<?php if ( !empty( $item_meta ) ): ?>

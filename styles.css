@@ -5,19 +5,28 @@
 /* Top Navigation Elements */
 ul.media-nav {
 	position: fixed;
-		top: 42px;
+		top: 32px;
 		right: 20%;
+	z-index: 5;
+	margin: 0;
+	padding: 10px 0;
 }
 
 ul.media-nav li {
 	display: inline-block;
-	margin-right: 10px;
+	margin-left: 10px;
 }
 
 ul.media-nav li:last-child {
 	margin: 0;
 }
 
+/* Bulk Mode Toggle */
+.bulk-edit {}
+
+.bulk-edit span {
+	display: inline-block;
+}
 
 /* Thumbnail Size Selector */
 .thumb-size {}
@@ -115,45 +124,88 @@ ul.media-nav li:last-child {
 	padding: 10px;
 	box-sizing: border-box;
 	display: table;
+	position: relative;
 }
-	.media-thumb {
-		display: table-cell;
-		vertical-align: middle;
-	}
-		.media-thumb img {
-			display: block;
-			margin: auto;
-			width: auto;
-			height: auto;
-			max-width: 100%;
-			outline: 1px solid transparent;
-			box-sizing: border-box;
-			box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-			-webkit-transition: outline 0.04s linear;
-			-moz-transition: outline 0.04s linear;
-			transition: outline 0.04s linear;
-		}
+
+.media-thumb {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+
+/* Item Pick Checkbox */
+.item-pick {
+	display: none;
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	padding: 14px;
+	background: #fff;
+	outline: 2px solid rgba(241,241,241,0.3);
+	border: 1px solid rgba(0,0,0,0.25);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+}
+
+body.picker-mode .item-pick {
+	display: block;
+}
+
+.item-pick:hover {
+	border-color: rgba(0,0,0,0.4);
+}
+
+.item-pick:after {
+	content: "\f147";
+	display: inline-block;
+	-webkit-font-smoothing: antialiased;
+	font: normal 30px/1 'dashicons';
+	vertical-align: top;
+	position: absolute;
+	top: 0;
+	right: 0;
+	opacity: 0;
+}
+
+.item-pick:hover:after {
+	opacity: 0.3;
+}
+
+
+.media-thumb img {
+	display: block;
+	margin: auto;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	outline: 1px solid transparent;
+	box-sizing: border-box;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+	-webkit-transition: outline 0.04s linear;
+	-moz-transition: outline 0.04s linear;
+	transition: outline 0.04s linear;
+}
 
 
 /* Grid Item Hover and Select */
 .media-thumb:hover img {
-	outline: 1px solid rgba(0,0,0,0.8);
+	/*outline: 1px solid rgba(0,0,0,0.8);*/
 }
+
 .media-item.selected .media-thumb img {
 	outline: 8px solid #0074A2;
 }
-.media-item.selected .media-details h3 {
-	background: #0074A2;
-	color: #fff;
-	box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+
+
+/* Grid Item Picked */
+.media-item.picked .media-thumb img {
+	outline: 6px solid #222;
 }
-.media-item.selected .media-options {
+
+.media-item.picked .item-pick:after {
 	opacity: 1;
-	background: #0074A2;
 }
-.media-item.selected .media-options a {
-	color: #fff;
-}
+
+
 
 .media-details {
 	display: none;
@@ -179,6 +231,7 @@ ul.media-nav li:last-child {
 	transition: all 0.15s linear;
 }
 
+
 /* Selected Thumbnail */
 .selected-thumb {
 	width: 100%;
@@ -194,6 +247,10 @@ ul.media-nav li:last-child {
 	-webkit-transition: all 0.15s linear;
 	-moz-transition: all 0.15s linear;
 	transition: all 0.15s linear;
+}
+
+.selected-thumb .item-pick {
+	display: none;
 }
 
 .selected-thumb > span {
@@ -261,4 +318,53 @@ ul.media-nav li:last-child {
 
 #media-sidebar.view-full-size .selected-details .media-meta {
 	opacity: 0;
+}
+
+
+/* Picked */
+#media-picked {
+	position: absolute;
+	bottom: -100%;
+	left: 0;
+	right: 0;
+	height: 100%;
+	z-index: 10001; /* To overpower a 10000 on #media-sidebar above */
+	background: rgba(0,0,0,0.1);
+	-webkit-transition: all 0.15s linear;
+	-moz-transition: all 0.15s linear;
+	transition: all 0.15s linear;
+}
+
+body.picker-mode #media-picked {
+	bottom: 0;
+}
+
+.picked-count {
+	padding: 10px;
+}
+
+.picked-list {}
+
+.picked-list li {
+	display: block;
+	float: left;
+	width: 20%;
+	margin: 0;
+	padding: 4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.picked-list img {
+	display: block;
+	height: 100%;
+	width: 100%;
+	border: 1px solid rgba(0,0,0,0.4);
+	border-radius: 3px;
+}
+
+.picked-actions {
+	clear: both;
+	padding: 10px;
 }
