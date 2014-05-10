@@ -483,6 +483,7 @@
 		 */
 		media.controller.State.prototype[ '_' + region ] = function() {
 			var mode = this.get( region );
+			this.frame.$el.toggleClass( 'hide-' + region, ! mode );
 			if ( mode ) {
 				this.frame[ region ].render( mode );
 			}
@@ -2044,11 +2045,11 @@
 	media.view.MediaFrame.Manage = media.view.MediaFrame.extend({
 		initialize: function() {
 			_.defaults( this.options, {
-				modal: false,
+				modal:     false,
 				selection: [],
 				library:   {},
 				multiple:  true,
-				state:    'library'
+				state:     'library'
 			} );
 			/**
 			 * call 'initialize' directly on the parent class
@@ -2094,7 +2095,8 @@
 					library:   media.query( options.library ),
 					multiple:  options.multiple,
 					title:     options.title,
-					priority:  20
+					priority:  20,
+					toolbar:   false
 				}),
 
 				new media.controller.EditImage( { model: options.editImage } )
@@ -2131,8 +2133,6 @@
 		 */
 		browseContent: function( content ) {
 			var state = this.state();
-
-			this.$el.removeClass('hide-toolbar');
 
 			// Browse our library of attachments.
 			content.view = new media.view.AttachmentsBrowser({
