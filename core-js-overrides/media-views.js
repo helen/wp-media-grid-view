@@ -5841,7 +5841,11 @@
 			event.preventDefault();
 			// Fold this string into the l10n object later.
 			if ( confirm( "You are about to permanently delete these items.\n'Cancel' to stop, 'OK' to delete." ) ) {
-				this.collection.invoke( 'destroy' );
+				// todo: eventually make a single endpoint for batch delete.
+				// see https://github.com/jashkenas/backbone/issues/139
+				while( this.collection.length ) {
+					this.collection.at(0).destroy();
+				}
 			}
 		}
 	});
