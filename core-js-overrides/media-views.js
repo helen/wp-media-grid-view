@@ -2145,6 +2145,7 @@
 				filters:    state.get('filterable'),
 				display:    state.get('displaySettings'),
 				dragInfo:   state.get('dragInfo'),
+				bulkEdit:   true,
 
 				suggestedWidth:  state.get('suggestedWidth'),
 				suggestedHeight: state.get('suggestedHeight'),
@@ -5521,6 +5522,7 @@
 				filters: false,
 				search:  true,
 				display: false,
+				bulkEdit: false,
 
 				AttachmentView: media.view.Attachment.Library
 			});
@@ -5675,6 +5677,9 @@
 			}
 
 			selection.on( 'selection:single', this.createSingle, this );
+			if ( this.options.bulkEdit ) {
+				selection.on( 'selection:single', this.maybeCreateMultiple, this );
+			}
 			selection.on( 'selection:unsingle', this.disposeSingle, this );
 
 			if ( selection.single() ) {
@@ -5682,9 +5687,31 @@
 			}
 		},
 
+		maybeCreateMultiple: function() {
+			var sidebar = this.sidebar,
+				single = this.options.selection.single();
+
+			// Bail early if there isn't a multi-selection.
+			if ( this.options.selection.length <=1 ) {
+				sidebar.unset( 'selection' );
+				return;
+			}
+			sidebar.set( 'selection', new media.view.SelectionBulkEdit({
+				controller: this.controller,
+				collection: this.options.selection,
+				priority:   -40
+			}).render() );
+		},
+
 		createSingle: function() {
 			var sidebar = this.sidebar,
 				single = this.options.selection.single();
+
+			// If bulk edit is enabled and more than one attachment has been
+			// selected, bail early.
+			if ( this.options.bulkEdit && this.options.selection.length > 1 ) {
+				return;
+			}
 
 			sidebar.set( 'details', new media.view.Attachment.Details({
 				controller: this.controller,
@@ -5793,6 +5820,31 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.SelectionBulkEdit
+	 *
+	 * @constructor
+	 * @augments wp.media.view.Selection
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 */
+	media.view.SelectionBulkEdit = media.view.Selection.extend({
+		template:  media.template('media-selection-bulk-edit'),
+		events: {
+			'click .clear-selection': 'clear',
+			'click .delete-selection':  'delete'
+		},
+
+		// Delete click handler.
+		delete: function( event ) {
+			event.preventDefault();
+			// Fold this string into the l10n object later.
+			if ( confirm( "You are about to permanently delete these items.\n'Cancel' to stop, 'OK' to delete." ) ) {
+				this.collection.invoke( 'destroy' );
+			}
+		}
+	});
 
 	/**
 	 * wp.media.view.Attachment.Selection

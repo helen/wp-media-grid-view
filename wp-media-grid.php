@@ -17,6 +17,8 @@ class WP_Media_Grid {
 
 		add_action( 'load-upload.php', array( $this, 'media_grid' ) );
 		add_action( 'admin_init', array( $this, 'enqueue' ) );
+		add_action( 'wp_enqueue_media', array( $this, 'wp_enqueue_media' ) );
+
 	}
 
 
@@ -83,6 +85,10 @@ class WP_Media_Grid {
 		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery', 'media-models' ) );
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
+	}
+
+	public function wp_enqueue_media() {
+		require_once( plugin_dir_path( __FILE__ ) . 'media-template.php' );
 	}
 }
 

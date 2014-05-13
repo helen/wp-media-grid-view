@@ -42,3 +42,17 @@
 	color: #fff;
 	cursor: default;
 }
+
+#media-library .media-selection {
+	position: static;
+}
+#media-library .attachments-browser .media-selection {
+	height: auto;
+}
+#media-library .attachments-browser .media-selection .selection-view {
+	display: block;
+}
+#media-library .attachments-browser .media-selection .attachments {
+	position: static;
+	height: auto;
+}
