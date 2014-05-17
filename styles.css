@@ -80,3 +80,33 @@
 .media-selection .selection-info .delete-selection:hover {
 	background: red;
 }
+
+/**
+ * For bulk editing, make any selected attachment look the same
+ * as any other selected attachment.
+ *
+ * Bulk edit mode shouldn't highlight the currently/last selected
+ * attachment.
+ * 
+ */
+.media-selection .attachment.selection.details {
+	-webkit-box-shadow: none;
+	        box-shadow: none;
+}
+.selected.attachment {
+	-webkit-box-shadow: 0 0 0 1px #fff, 0 0 0 5px #1e8cbe;
+	        box-shadow: 0 0 0 1px #fff, 0 0 0 5px #1e8cbe;
+}
+
+.attachment.selected .check {
+	background-color: #1e8cbe;
+	-webkit-box-shadow: 0 0 0 1px #fff, 0 0 0 2px #1e8cbe;
+	        box-shadow: 0 0 0 1px #fff, 0 0 0 2px #1e8cbe;
+}
+
+.attachment.selected .check div {
+	background-position: -21px 0;
+}
+.attachment.selected .check:hover div {
+	background-position: -60px 0;
+}
