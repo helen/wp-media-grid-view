@@ -16,7 +16,7 @@ class WP_Media_Grid {
 
 		add_action( 'load-upload.php', array( $this, 'media_grid' ) );
 		add_action( 'admin_init', array( $this, 'enqueue' ) );
-		add_action( 'wp_enqueue_media', array( $this, 'wp_enqueue_media' ) );
+		add_action( 'print_media_templates', array( $this, 'print_media_templates' ) );
 
 	}
 
@@ -86,7 +86,7 @@ class WP_Media_Grid {
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
 	}
 
-	public function wp_enqueue_media() {
+	public function print_media_templates() {
 		require_once( plugin_dir_path( __FILE__ ) . 'media-template.php' );
 	}
 }
