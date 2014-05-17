@@ -61,3 +61,22 @@
 	position: static;
 	height: auto;
 }
+
+/**
+ * Reset the colors for the sidebar `clear selection` button.
+ */
+.media-selection .selection-info .clear-selection {
+	color: #21759B;
+}
+.media-selection .selection-info .clear-selection:hover {
+	background: #21759B;
+	color: #fff;
+	border-color: transparent;	
+}
+
+.media-selection .selection-info .delete-selection {
+	color: red;
+}
+.media-selection .selection-info .delete-selection:hover {
+	background: red;
+}
