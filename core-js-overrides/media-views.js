@@ -6156,7 +6156,7 @@
 	media.view.Attachment.Details = media.view.Attachment.extend({
 		tagName:   'div',
 		className: 'attachment-details',
-		template:  media.template('attachment-details'),
+		template:  media.template('attachment-details-new'),
 
 		events: {
 			'change [data-setting]':          'updateSetting',
