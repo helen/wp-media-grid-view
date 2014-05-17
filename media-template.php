@@ -36,6 +36,10 @@
 				<div class="filename">{{ data.filename }}</div>
 				<div class="uploaded">{{ data.dateFormatted }}</div>
 
+				<# if ( data.filesizeHumanReadable ) { #>
+					<div class="file-size">{{ data.filesizeHumanReadable }}</div>
+				<# } #>
+
 				<# if ( 'image' === data.type && ! data.uploading ) { #>
 					<# if ( data.width && data.height ) { #>
 						<div class="dimensions">{{ data.width }} &times; {{ data.height }}</div>

@@ -10,6 +10,8 @@ Author: Shaun Andrews
 class WP_Media_Grid {
 
 	function __construct() {
+		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'wp_prepare_attachment_for_js' ), 10, 3 );
+
 		if ( basename( $_SERVER['REQUEST_URI'] ) !== 'upload.php' ) {
 			return;
 		}
@@ -80,7 +82,6 @@ class WP_Media_Grid {
 		wp_register_script( 'media-models', plugins_url( 'core-js-overrides/media-models.js', __FILE__ ), array( 'wp-backbone' ), false, 1 );
 		wp_register_script( 'media-views', plugins_url( 'core-js-overrides/media-views.js', __FILE__ ), array( 'utils', 'media-models', 'wp-plupload', 'jquery-ui-sortable', 'wp-mediaelement' ), false, 1 );
 		wp_enqueue_media();
-
 		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery', 'media-models' ) );
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
 		wp_enqueue_script( 'live-filter', plugins_url( 'libs/jquery.liveFilter.js', __FILE__ ) );
@@ -88,6 +89,13 @@ class WP_Media_Grid {
 
 	public function print_media_templates() {
 		require_once( plugin_dir_path( __FILE__ ) . 'media-template.php' );
+	}
+
+	public function wp_prepare_attachment_for_js( $response, $attachment, $meta ) {
+		$bytes = filesize( get_attached_file( $attachment->ID ) );
+		$response['filesizeBytes'] = $bytes;
+		$response['filesizeHumanReadable'] = size_format( $bytes );
+		return $response;
 	}
 }
 
