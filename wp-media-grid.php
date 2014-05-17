@@ -10,8 +10,7 @@ Author: Shaun Andrews
 class WP_Media_Grid {
 
 	function __construct() {
-
-		if (strpos($_SERVER["REQUEST_URI"], "upload.php") === FALSE) {
+		if ( basename( $_SERVER['REQUEST_URI'] ) !== 'upload.php' ) {
 			return;
 		}
 
