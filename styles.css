@@ -110,3 +110,42 @@
 .attachment.selected .check:hover div {
 	background-position: -60px 0;
 }
+
+.media-toolbar {
+	/* So the filters dropdown can fall on top of browser results */
+	overflow: visible;
+}
+.filter-dropdown {
+	margin-top: 10px;
+	position: relative;
+}
+.filter-dropdown:before {
+	content: '\f179';
+	font: normal 20px/1 'dashicons' !important;
+	position: absolute;
+	right: 0;
+	speak: none;
+	top: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	z-index: 20;
+}
+.filter-dropdown .inner-content {
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	display: none;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	top: 20px;
+}
+
+.filter-dropdown .search {
+	background-color: transparent;
+	margin-top: 0;
+}
+
+.filter-dropdown:hover .inner-content {
+	display: block;
+}

@@ -5249,6 +5249,18 @@
 		}())
 	});
 
+	media.view.FilterDropdown = media.View.extend({
+		className: 'filter-dropdown',
+		template: media.template( 'media-filter-dropdown' ),
+
+		initialize: function() {
+			this.views.set( '.search', new media.view.Search({
+				controller: this.controller,
+				model:      this.model,
+				priority:   60
+			}) );
+		}
+	});
 	/**
 	 * wp.media.view.Search
 	 *
@@ -5580,7 +5592,7 @@
 			}).render() );
 
 			if ( this.options.search ) {
-				this.toolbar.set( 'search', new media.view.Search({
+				this.toolbar.set( 'filter-dropdown', new media.view.FilterDropdown({
 					controller: this.controller,
 					model:      this.collection.props,
 					priority:   60

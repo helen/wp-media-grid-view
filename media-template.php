@@ -1,3 +1,8 @@
+<script type="text/html" id="tmpl-media-filter-dropdown">
+	<div class="inner-content">
+		<div class="search"></div>
+	</div>
+</script>
 <script type="text/html" id="tmpl-media-selection-bulk-edit">
 	<div class="selection-info">
 		<span class="count"></span>
