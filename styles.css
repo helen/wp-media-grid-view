@@ -1,9 +1,14 @@
-#media-library .media-frame {
+/**
+ * Position both the frame and the uploader window into the content
+ * area of the screen.
+ */
+#media-library .media-frame,
+#media-library .uploader-window {
 	position: fixed;
-	top: 32px;
+	bottom: 40px;
 	left: 160px;
 	right: 0;
-	bottom: 40px;
+	top: 32px;
 }
 
 .folded #media-library .media-frame {
