@@ -82,12 +82,8 @@
 }
 
 /**
- * For bulk editing, make any selected attachment look the same
- * as any other selected attachment.
- *
- * Bulk edit mode shouldn't highlight the currently/last selected
- * attachment.
- * 
+ * While bulk editing, make any selected attachment styled the same
+ * as other selected attachments.
  */
 .media-selection .attachment.selection.details {
 	-webkit-box-shadow: none;
