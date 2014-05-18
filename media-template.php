@@ -1,11 +1,12 @@
-<script type="text/html" id="tmpl-media-filter-dropdown">
-	<div class="inner-content">
-		<h4>Title</h4>
-		<div class="search"></div>
-		<h4>Filesize (kB)</h4>
-		<input type="text" class="minimum-filesize" placeholder="<?php _e( 'Min' ); ?>">
-		<input type="text" class="maximum-filesize" placeholder="<?php _e( 'Max' ); ?>">
-	</div>
+<script type="text/html" id="tmpl-media-search-interface">
+	<h4>Title</h4>
+	<div class="search"></div>
+	<h4>Filesize (kB)</h4>
+	<input type="text" class="minimum-filesize" placeholder="<?php _e( 'Min' ); ?>">
+	<input type="text" class="maximum-filesize" placeholder="<?php _e( 'Max' ); ?>">
+	<h4>Date</h4>
+	<input type="text" class="from-date" placeholder="<?php _e( 'From' ); ?>">
+	<input type="text" class="to-date" placeholder="<?php _e( 'To' ); ?>">
 </script>
 <script type="text/html" id="tmpl-media-selection-bulk-edit">
 	<div class="selection-info">

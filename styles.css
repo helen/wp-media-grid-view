@@ -25,6 +25,7 @@
 /* Thumbnail Size Selector */
 .size-options {
 	display: inline-block;
+	margin-bottom: 0;
 }
 
 .size-options li {
@@ -71,7 +72,7 @@
 .media-selection .selection-info .clear-selection:hover {
 	background: #21759B;
 	color: #fff;
-	border-color: transparent;	
+	border-color: transparent;
 }
 
 .media-selection .selection-info .delete-selection {
@@ -111,12 +112,13 @@
 	/* So the filters dropdown can fall on top of browser results */
 	overflow: visible;
 }
-.filter-dropdown {
-	margin-top: 10px;
+
+#media-library .search-button {
+	cursor: pointer;
+	margin-top: 13px;
 	position: relative;
-	width: 250px;
 }
-.filter-dropdown:before {
+#media-library .search-button:before {
 	content: '\f179';
 	font: normal 20px/1 'dashicons' !important;
 	position: absolute;
@@ -127,26 +129,41 @@
 	-moz-osx-font-smoothing: grayscale;
 	z-index: 20;
 }
-.filter-dropdown .inner-content {
-	background-color: #fff;
-	border: 1px solid #ddd;
-	border-radius: 5px;
+
+.media-toolbar-secondary, .media-toolbar-primary {
+	height: auto;
+}
+.media-frame .attachments-browser .media-toolbar-tertiary {
 	display: none;
-	padding: 10px;
+	height: 30px;
+	left: 0;
+	padding: 0 16px;
 	position: absolute;
 	right: 0;
-	top: 20px;
+	top: 50px;
 }
 
-.filter-dropdown h4 {
+.media-frame.show-search-interface .attachments-browser .media-toolbar-tertiary {
+	display: block;
+}
+
+.media-frame.show-search-interface .attachments-browser .media-toolbar {
+	height: 80px;
+}
+
+.media-frame.show-search-interface .attachments-browser .attachments {
+	top: 80px;
+}
+
+.search-interface * {
+	display: inline;
+}
+
+.search-interface h4 {
 	margin: 0;
 }
-.filter-dropdown .search {
-	background-color: transparent;
-	margin-top: 0;
-	padding: 0;
-}
-.filter-dropdown input[type="text"], .filter-dropdown input[type="search"] {
+
+.search-interface input[type="text"], .search-interface input[type="search"] {
 	font-family: "Open Sans", sans-serif;
 	font-size: 12px;
 	-webkit-box-sizing: border-box;
@@ -156,7 +173,6 @@
 	border-style: solid;
 	border-color: #dfdfdf;
 	padding: 4px;
-	width: 100%;
 	border: 1px solid #ddd;
 	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
 	box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
@@ -165,12 +181,19 @@
 	-webkit-transition: .05s border-color ease-in-out;
 	transition: .05s border-color ease-in-out;
 }
-
-.filter-dropdown input.minimum-filesize, .filter-dropdown input.maximum-filesize {
-	float: left;
-	width: 49%;
+.search-interface input[type="search"] {
+	width: 160px;
 }
 
-.filter-dropdown:hover .inner-content {
-	display: block;
+.search-interface .search {
+	background-color: transparent;
+	margin-top: 0;
+	padding: 0;
+}
+
+.search-interface .hasDatepicker {
+	width: 80px;
+}
+.search-interface input.minimum-filesize, .search-interface input.maximum-filesize {
+	width: 50px;
 }

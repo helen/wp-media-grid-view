@@ -3867,10 +3867,12 @@
 			// The toolbar is composed of two `PriorityList` views.
 			this.primary   = new media.view.PriorityList();
 			this.secondary = new media.view.PriorityList();
+			this.tertiary = new media.view.PriorityList();
 			this.primary.$el.addClass('media-toolbar-primary');
 			this.secondary.$el.addClass('media-toolbar-secondary');
+			this.tertiary.$el.addClass('media-toolbar-tertiary');
 
-			this.views.set([ this.secondary, this.primary ]);
+			this.views.set([ this.secondary, this.primary, this.tertiary ]);
 
 			if ( this.options.items ) {
 				this.set( this.options.items, { silent: true });
@@ -3935,7 +3937,13 @@
 
 				this._views[ id ] = view;
 
-				list = view.options.priority < 0 ? 'secondary' : 'primary';
+				if ( view.options.priority < 0 )
+					list = 'secondary';
+				else if ( view.options.priority > 0 )
+					list = 'primary';
+				else
+					list = 'tertiary';
+
 				this[ list ].set( id, view, options );
 			}
 
@@ -5249,12 +5257,14 @@
 		}())
 	});
 
-	media.view.FilterDropdown = media.View.extend({
-		className: 'filter-dropdown',
-		template: media.template( 'media-filter-dropdown' ),
+	media.view.SearchInterface = media.View.extend({
+		className: 'search-interface',
+		template: media.template( 'media-search-interface' ),
 		events: {
 			'keyup .minimum-filesize': 'changeMinimumFilesize',
-			'keyup .maximum-filesize': 'changeMaximumFilesize'
+			'keyup .maximum-filesize': 'changeMaximumFilesize',
+			'change .from-date': 'changeFromDate',
+			'change .to-date': 'changeToDate',
 		},
 
 		initialize: function() {
@@ -5265,16 +5275,43 @@
 			}) );
 		},
 
+		render: function () {
+			media.View.prototype.render.apply( this, arguments );
+			this.$('.from-date, .to-date').datepicker();
+			return this;
+		},
+
 		changeMinimumFilesize: function( event ) {
 			this.model.set( 'minimumFilesize', event.target.value );
 		},
 
 		changeMaximumFilesize: function( event ) {
 			this.model.set( 'maximumFilesize', event.target.value );
+		},
+
+		changeFromDate: function( event ) {
+			this.model.set( 'fromDate', event.target.value );
+		},
+
+		changeToDate: function( event ) {
+			this.model.set( 'toDate', event.target.value );
 		}
 
 
 	});
+
+	media.view.SearchButton = media.View.extend({
+		className: 'search-button',
+
+		events: {
+			'click': 'toggleShowSearchInterface'
+		},
+
+		toggleShowSearchInterface: function() {
+			this.controller.$el.toggleClass( 'show-search-interface' );
+		}
+	});
+
 	/**
 	 * wp.media.view.Search
 	 *
@@ -5606,10 +5643,16 @@
 			}).render() );
 
 			if ( this.options.search ) {
-				this.toolbar.set( 'filter-dropdown', new media.view.FilterDropdown({
+				this.toolbar.set( 'search-button', new media.view.SearchButton({
+					controller: this.controller,
+					priority:   60
+				}).render() );
+
+				this.toolbar.set( 'search-interface', new media.view.SearchInterface({
 					controller: this.controller,
 					model:      this.collection.props,
-					priority:   60
+					className: 'search-interface',
+					priority:   0
 				}).render() );
 			}
 

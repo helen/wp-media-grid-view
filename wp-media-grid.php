@@ -43,11 +43,18 @@ class WP_Media_Grid {
 	public function enqueue() {
 		wp_deregister_script( 'media-models' );
 		wp_deregister_script( 'media-views' );
-		wp_register_script( 'media-models', plugins_url( 'core-js-overrides/media-models.js', __FILE__ ), array( 'wp-backbone' ), false, 1 );
-		wp_register_script( 'media-views', plugins_url( 'core-js-overrides/media-views.js', __FILE__ ), array( 'utils', 'media-models', 'wp-plupload', 'jquery-ui-sortable', 'wp-mediaelement' ), false, 1 );
+		wp_register_script( 'media-models',
+			plugins_url( 'core-js-overrides/media-models.js', __FILE__ ),
+			array( 'wp-backbone' ), false, 1 );
+		wp_register_script( 'media-views',
+			plugins_url( 'core-js-overrides/media-views.js', __FILE__ ),
+			array( 'utils', 'media-models', 'wp-plupload', 'jquery-ui-sortable',
+				'wp-mediaelement', 'jquery-ui-datepicker' ),
+			false, 1 );
 		wp_enqueue_media();
 		wp_enqueue_script( 'wp-media-grid', plugins_url( 'scripts.js', __FILE__ ), array( 'jquery', 'media-models' ) );
 		wp_enqueue_style( 'wp-media-grid', plugins_url( 'styles.css', __FILE__ ) );
+		wp_enqueue_style( 'jquery-ui-fresh', plugins_url( 'jquery-ui-fresh.css', __FILE__ ) );
 	}
 
 	public function print_media_templates() {
@@ -111,7 +118,6 @@ class WP_Media_Grid {
 
 		$response['filesizeBytes'] = $bytes;
 		$response['filesizeHumanReadable'] = size_format( $bytes );
-
 		if ( isset( $_REQUEST['query'] ) ) {
 			if ( isset( $_REQUEST['query']['minimumFilesize'] ) && $_REQUEST['query']['minimumFilesize'] && $_REQUEST['query']['minimumFilesize'] * 1024 > $response['filesizeBytes'] ) {
 				return false;
@@ -119,6 +125,20 @@ class WP_Media_Grid {
 
 			if ( isset( $_REQUEST['query']['maximumFilesize'] ) && $_REQUEST['query']['maximumFilesize'] && $_REQUEST['query']['maximumFilesize'] * 1024 < $response['filesizeBytes'] ) {
 				return false;
+			}
+			if ( isset( $_REQUEST['query']['fromDate'] ) && $_REQUEST['query']['fromDate'] ) {
+				$date_time = new DateTime( $_REQUEST['query']['fromDate'] );
+
+				if ( $date_time->format( 'U' ) > ( $response['date'] / 1000 ) )
+					return false;
+			}
+			if ( isset( $_REQUEST['query']['toDate'] ) && $_REQUEST['query']['toDate'] ) {
+				$date_time = new DateTime( $_REQUEST['query']['toDate'] );
+				// A "to date" query should be inclusive of the day.
+				$date_time->modify( '+1 day' );
+
+				if ( $date_time->format( 'U' ) < ( $response['date'] / 1000 ) )
+					return false;
 			}
 		}
 
