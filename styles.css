@@ -19,6 +19,12 @@
 	left: 36px;
 }
 
+.media-modal .uploader-inline {
+	margin: 20px;
+	padding: 20px;
+	text-align: center;
+}
+
 @media screen and (max-width: 782px) {
 	.auto-fold #media-library .media-frame {
 		left: 0px;
