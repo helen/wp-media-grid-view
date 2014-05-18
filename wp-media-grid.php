@@ -10,71 +10,37 @@ Author: Shaun Andrews
 class WP_Media_Grid {
 
 	function __construct() {
+		// AJAX-related functions that need to be run whether nor not
+		// we're on the media grid screen.
 		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'wp_prepare_attachment_for_js' ), 10, 3 );
 		add_action( 'wp_ajax_query-attachments', array( $this, 'wp_ajax_query_attachments' ), 0 );
+
+		// Bail if we're not on the media grid screen.
 		if ( basename( $_SERVER['REQUEST_URI'] ) !== 'upload.php' ) {
 			return;
 		}
 
-		add_action( 'load-upload.php', array( $this, 'media_grid' ) );
+		add_action( 'load-upload.php', array( $this, 'render' ) );
 		add_action( 'admin_init', array( $this, 'enqueue' ) );
 		add_action( 'print_media_templates', array( $this, 'print_media_templates' ) );
 	}
 
 	/**
-	 * The main template file for the upload.php screen
-	 *
-	 * Replaces entire contents of upload.php
-	 * @require admin-header.php and admin-footer.php
+	 * Render the media grid screen.
 	 */
-	function media_grid() {
-		if ( isset( $_REQUEST['media_action'] ) ) {
-			switch ( $_REQUEST['media_action'] ) {
-				case 'more':
-					$next_page = (int) $_GET['next_page'];
-					$args = array(
-						'post_type' => 'attachment',
-						'post_status' => 'inherit',
-						'posts_per_page' => 25,
-						'paged' => $next_page,
-					);
-
-					$items = new WP_Query( $args );
-					self::renderMediaItems( $items->posts );
-					die();
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		$args = array(
-			'post_type' => 'attachment',
-			'post_status' => 'inherit',
-			'posts_per_page' => 25,
-			'paged' => 1,
-			'post_mime_type' => 'image',
-		);
-
-		$items = new WP_Query( $args );
-
-		// Admin header
+	function render() {
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
-	?>
-		<div id="media-library" class="wrap">
-		<?php
-
-		// Admin footer
+		?><div id="media-library" class="wrap"><?php
 		require( ABSPATH . 'wp-admin/admin-footer.php');
 		exit;
 	}
 
 	/**
-	 * Enqueue scripts and styles
+	 * Enqueue scripts and styles.
+	 *
+	 * To ease development, use forked versions of core JS.
 	 */
 	public function enqueue() {
-		// To ease development, use forked versions of core JS.
 		wp_deregister_script( 'media-models' );
 		wp_deregister_script( 'media-views' );
 		wp_register_script( 'media-models', plugins_url( 'core-js-overrides/media-models.js', __FILE__ ), array( 'wp-backbone' ), false, 1 );
