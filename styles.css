@@ -1,3 +1,7 @@
+#wpfooter {
+	position: fixed;
+}
+
 /**
  * Position both the frame and the uploader window into the content
  * area of the screen.
