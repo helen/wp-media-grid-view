@@ -5252,6 +5252,10 @@
 	media.view.FilterDropdown = media.View.extend({
 		className: 'filter-dropdown',
 		template: media.template( 'media-filter-dropdown' ),
+		events: {
+			'keyup .minimum-filesize': 'changeMinimumFilesize',
+			'keyup .maximum-filesize': 'changeMaximumFilesize'
+		},
 
 		initialize: function() {
 			this.views.set( '.search', new media.view.Search({
@@ -5259,7 +5263,17 @@
 				model:      this.model,
 				priority:   60
 			}) );
+		},
+
+		changeMinimumFilesize: function( event ) {
+			this.model.set( 'minimumFilesize', event.target.value );
+		},
+
+		changeMaximumFilesize: function( event ) {
+			this.model.set( 'maximumFilesize', event.target.value );
 		}
+
+
 	});
 	/**
 	 * wp.media.view.Search
