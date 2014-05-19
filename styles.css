@@ -33,6 +33,19 @@
 	border: none;
 }
 
+/* Bringing the grid up. */
+.attachments-browser .attachments, .attachments-browser .uploader-inline {
+	top: 0;
+	padding: 50px 8px 10px 8px !important; /* The important is overriding #__attachments-view-{{id}} */
+}
+
+
+/* Adding a subtle transparent background and adjust the width of the toolbar */
+#media-library .media-toolbar {
+	background: rgba( 242, 242, 242, 0.9 );
+	right: 280px;
+}
+
 
 /* Making the sidebar smaller. */
 #media-library .media-sidebar {
