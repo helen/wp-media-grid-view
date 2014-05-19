@@ -124,18 +124,20 @@
 	overflow: visible;
 }
 
+
+
+/* Search UI for Media Grid */
 #media-library .search-button {
 	cursor: pointer;
 	margin-top: 13px;
 	position: relative;
-	-webkit-user-select: none;  /* Chrome all / Safari all */
-	-moz-user-select: none;     /* Firefox all */
-	-ms-user-select: none;      /* IE 10+ */
-
-	/* No support for these yet, use at own risk */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	-o-user-select: none;
 	user-select: none;
 }
+
 #media-library .search-button:before {
 	content: '\f179';
 	font: normal 20px/1 'dashicons' !important;
