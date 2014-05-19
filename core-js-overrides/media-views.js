@@ -5375,15 +5375,11 @@
 			this.sizes = {
 				small: {
 					text: 'Small',
-					columns: 6
-				},
-				medium: {
-					text: 'Medium',
-					columns: 4
+					columns: 7
 				},
 				large: {
 					text: 'Large',
-					columns: 2
+					columns: 3
 				}
 			};
 
