@@ -16,6 +16,24 @@
 	top: 32px;
 }
 
+
+/* Removing the tabs. */
+#media-library .media-frame-router {
+	display: none;
+}
+
+/**
+ * Bring the Content up to fill in the space where the tabs
+ * used to live. And clearing out the background and borders
+ * so the grid feels more at home. (less modal-like)
+ */
+#media-library .media-frame-content {
+	top: 50px;
+	background: transparent;
+	border: none;
+}
+
+
 .folded #media-library .media-frame {
 	left: 36px;
 }
