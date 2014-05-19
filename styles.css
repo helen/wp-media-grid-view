@@ -1,5 +1,6 @@
+/* Hide the wpfooter, which is mainly useless. */
 #wpfooter {
-	position: fixed;
+	display: none;
 }
 
 /**
@@ -9,7 +10,7 @@
 #media-library .media-frame,
 #media-library .uploader-window {
 	position: fixed;
-	bottom: 40px;
+	bottom: 0;
 	left: 160px;
 	right: 0;
 	top: 32px;
