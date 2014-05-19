@@ -34,6 +34,17 @@
 }
 
 
+/* Clean up the sidebar */
+#media-library .media-sidebar {
+	background: transparent;
+	width: 230px;
+}
+
+.attachments-browser .attachments, .attachments-browser .uploader-inline {
+	right: 250px;
+}
+
+
 .folded #media-library .media-frame {
 	left: 36px;
 }
