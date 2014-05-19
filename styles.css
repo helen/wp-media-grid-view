@@ -3,6 +3,15 @@
 	display: none;
 }
 
+
+/* Tweaking the page title to look more like the other wp-admin screens. */
+#media-library .media-frame-title h1 {
+	font-size: 23px;
+	font-weight: 400;
+	color: #222;
+}
+
+
 /**
  * Position both the frame and the uploader window into the content
  * area of the screen.

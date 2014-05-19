@@ -20,6 +20,10 @@ class WP_Media_Grid {
 			return;
 		}
 
+		if ( basename( $_SERVER['REQUEST_URI'] ) == 'upload.php?tableview' ) {
+			return;
+		}
+
 		add_action( 'load-upload.php', array( $this, 'render' ) );
 		add_action( 'admin_init', array( $this, 'enqueue' ) );
 		add_action( 'print_media_templates', array( $this, 'print_media_templates' ) );
