@@ -34,7 +34,9 @@ class WP_Media_Grid {
 	 */
 	function render() {
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
-		?><div id="media-library" class="wrap"><?php
+		?><div id="media-library" class="wrap">
+		<a href="./upload.php?tableview" id="media-list-view">See the "old" List View</a>
+		<?php
 		require( ABSPATH . 'wp-admin/admin-footer.php');
 		exit;
 	}

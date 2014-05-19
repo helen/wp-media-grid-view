@@ -26,6 +26,16 @@
 }
 
 
+/* Adding a 'List View' button */
+#media-list-view {
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	z-index: 200000;
+}
+
+
+
 /* Removing the tabs. */
 #media-library .media-frame-router {
 	display: none;
