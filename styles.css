@@ -34,12 +34,13 @@
 }
 
 
-/* Clean up the sidebar */
+/* Making the sidebar smaller. */
 #media-library .media-sidebar {
 	background: transparent;
 	width: 230px;
 }
 
+/* Making the grid a little wider. */
 .attachments-browser .attachments, .attachments-browser .uploader-inline {
 	right: 250px;
 }
