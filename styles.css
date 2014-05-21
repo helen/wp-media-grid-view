@@ -198,7 +198,7 @@
 /* Search UI for Media Grid */
 #media-library .search-button {
 	cursor: pointer;
-	margin-top: 13px;
+	margin: 14px 14px 0 0;
 	position: relative;
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -226,7 +226,7 @@
 	display: none;
 	height: 30px;
 	left: 0;
-	padding: 0 16px;
+	padding: 10px 15px;
 	position: absolute;
 	right: 0;
 	top: 50px;
@@ -237,7 +237,7 @@
 }
 
 .media-frame.show-search-interface .attachments-browser .media-toolbar {
-	height: 80px;
+	height: 100px;
 }
 
 .media-frame.show-search-interface .attachments-browser .attachments {
