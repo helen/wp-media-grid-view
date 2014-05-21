@@ -16,8 +16,7 @@
  * Position both the frame and the uploader window into the content
  * area of the screen.
  */
-#media-library .media-frame,
-#media-library .uploader-window {
+#media-library .media-frame {
 	position: fixed;
 	bottom: 0;
 	left: 160px;

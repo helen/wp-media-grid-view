@@ -2049,8 +2049,21 @@
 				selection: [],
 				library:   {},
 				multiple:  true,
-				state:     'library'
+				state:     'library',
+				uploader:  false
 			} );
+
+			// initialize a window-wide uploader
+			this.uploader = new media.view.UploaderWindow({
+				controller: this,
+				uploader: {
+					dropzone:  $('body'),
+					container: $('body')
+				}
+			}).render();
+			this.uploader.ready();
+			$('body').append( this.uploader.el );
+
 			/**
 			 * call 'initialize' directly on the parent class
 			 */
