@@ -127,7 +127,7 @@
 	background-repeat: no-repeat;
 	background-position: 50%;
 	opacity: 0.15;
-	transition: all 0.05s ease-in-out;
+	transition: all 0.03s ease-in-out;
 }
 
 .size-options li.small {
