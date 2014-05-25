@@ -5398,7 +5398,7 @@
 
 			var current = getUserSetting( 'attachmentBrowserColumns' ) || 2;
 			this.$el.html( _.chain( this.sizes ).map( function( size, id ) {
-				return $('<li></li>').html( size.text ).addClass( size.text.toLowerCase() ).attr( 'data-number-of-columns', size.columns ).toggleClass( 'current', current == size.columns );
+				return $('<li></li>').html( size.text ).attr( 'title', size.text + ' Thumbnails').addClass( size.text.toLowerCase() ).attr( 'data-number-of-columns', size.columns ).toggleClass( 'current', current == size.columns );
 			}, this ).value() );
 		},
 
