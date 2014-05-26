@@ -5386,6 +5386,10 @@
 
 		initialize: function() {
 			this.sizes = {
+				list: {
+					text: 'List',
+					columns: 1
+				},
 				small: {
 					text: 'Small',
 					columns: 7
