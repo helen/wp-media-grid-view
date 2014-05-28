@@ -786,18 +786,19 @@
 	 */
 	media.controller.GalleryEdit = media.controller.Library.extend({
 		defaults: {
-			id:         'gallery-edit',
-			multiple:   false,
-			describe:   true,
-			edge:       199,
-			editing:    false,
-			sortable:   true,
-			searchable: false,
-			toolbar:    'gallery-edit',
-			content:    'browse',
-			title:      l10n.editGalleryTitle,
-			priority:   60,
-			dragInfo:   true,
+			id:              'gallery-edit',
+			multiple:        false,
+			describe:        true,
+			edge:            199,
+			editing:         false,
+			sortable:        true,
+			searchable:      false,
+			toolbar:         'gallery-edit',
+			content:         'browse',
+			title:           l10n.editGalleryTitle,
+			priority:        60,
+			dragInfo:        true,
+			displaySettings: true,
 
 			// Don't sync the selection, as the Edit Gallery library
 			// *is* the selection.
@@ -839,10 +840,15 @@
 		},
 
 		gallerySettings: function( browser ) {
+			if ( ! this.get('displaySettings') ) {
+				return;
+			}
+
 			var library = this.get('library');
 
-			if ( ! library || ! browser )
+			if ( ! library || ! browser ) {
 				return;
+			}
 
 			library.gallery = library.gallery || new Backbone.Model();
 
@@ -6065,7 +6071,7 @@
 				}
 			// Handle checkboxes.
 			} else if ( $setting.is('input[type="checkbox"]') ) {
-				$setting.prop( 'checked', !! value );
+				$setting.prop( 'checked', !! value && 'false' !== value );
 			}
 		},
 		/**
@@ -6495,7 +6501,7 @@
 		},
 
 		initialize: function() {
-			this.$input = $('<input/>').attr( 'type', 'text' ).val( this.model.get('url') );
+			this.$input = $('<input id="embed-url-field" />').attr( 'type', 'text' ).val( this.model.get('url') );
 			this.input = this.$input[0];
 
 			this.spinner = $('<span class="spinner" />')[0];
@@ -6551,7 +6557,51 @@
 	 */
 	media.view.EmbedLink = media.view.Settings.extend({
 		className: 'embed-link-settings',
-		template:  media.template('embed-link-settings')
+		template:  media.template('embed-link-settings'),
+
+		initialize: function() {
+			this.spinner = $('<span class="spinner" />');
+			this.$el.append( this.spinner[0] );
+			this.listenTo( this.model, 'change:url', this.updateoEmbed );
+		},
+
+		updateoEmbed: function() {
+			var url = this.model.get( 'url' );
+
+			this.$('.setting.title').show();
+			// clear out previous results
+			this.$('.embed-container').hide().find('.embed-preview').html('');
+
+			// only proceed with embed if the field contains more than 6 characters
+			if ( url && url.length < 6 ) {
+				return;
+			}
+
+			this.spinner.show();
+
+			setTimeout( _.bind( this.fetch, this ), 500 );
+		},
+
+		fetch: function() {
+			// check if they haven't typed in 500 ms
+			if ( $('#embed-url-field').val() !== this.model.get('url') ) {
+				return;
+			}
+
+			wp.ajax.send( 'parse-embed', {
+				data : {
+					post_ID: media.view.settings.post.id,
+					content: '[embed]' + this.model.get('url') + '[/embed]'
+				}
+			} ).done( _.bind( this.renderoEmbed, this ) );
+		},
+
+		renderoEmbed: function(html) {
+			this.spinner.hide();
+
+			this.$('.setting.title').hide();
+			this.$('.embed-container').show().find('.embed-preview').html( html );
+		}
 	});
 
 	/**
